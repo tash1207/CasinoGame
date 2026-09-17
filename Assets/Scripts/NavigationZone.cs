@@ -5,7 +5,6 @@ public class NavigationZone : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
     [Header("Cursor Settings")]
     public Texture2D arrowCursor;
-    public Vector2 cursorHotspot = new Vector2(16, 16); // Center of cursor image
 
     [Header("Movement Settings")]
     public Transform targetWayPoint; // Where the camera should go
@@ -14,6 +13,8 @@ public class NavigationZone : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     [Header("Navigation Zones")]
     public GameObject[] disableZones;
     public GameObject[] enableZones;
+
+    Vector2 cursorHotspot = new Vector2(16, 16); // Center of cursor image
 
     public void OnPointerEnter(PointerEventData eventData)
     {
