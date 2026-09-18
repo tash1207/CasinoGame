@@ -131,48 +131,7 @@ public class CardManager : MonoBehaviour
 
     void PrintHands()
     {
-        CheckHighCard();
-        CheckPair();
+        HandManager.CheckHand(handCards, tableCards);
     }
 
-    void CheckHighCard()
-    {
-        Card currentHighCard = handCards[0];
-        if (handCards[1].value > currentHighCard.value)
-        {
-            currentHighCard = handCards[1];
-        }
-        foreach (var tableCard in tableCards)
-        {
-            if (tableCard.value > currentHighCard.value)
-            {
-                currentHighCard = tableCard;
-            }
-        }
-        Debug.Log("High Card: " + currentHighCard.valueName + " of " + currentHighCard.GetSuitName());
-    }
-
-    void CheckPair()
-    {
-        Card currentCard = handCards[0];
-        if (handCards[1].value == currentCard.value)
-        {
-            Debug.Log("Pair of " + currentCard.valueName + "s");
-        }
-        foreach (var tableCard in tableCards)
-        {
-            if (tableCard.value == currentCard.value)
-            {
-                Debug.Log("Pair of " + currentCard.valueName + "s");
-            }
-        }
-        currentCard = handCards[1];
-        foreach (var tableCard in tableCards)
-        {
-            if (tableCard.value == currentCard.value)
-            {
-                Debug.Log("Pair of " + currentCard.valueName + "s");
-            }
-        }
-    }
 }
