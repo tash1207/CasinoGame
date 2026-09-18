@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -5,6 +6,13 @@ public class EventClickable : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
     [SerializeField]
     GameObject canvasToDisplay;
+
+    [SerializeField]
+    TMP_Text dialogTextField;
+
+    [SerializeField]
+    string dialogTextToDisplay;
+
 
     Vector2 cursorHotspot = new Vector2(16, 16); // Center of cursor image
 
@@ -25,6 +33,10 @@ public class EventClickable : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void OnPointerClick(PointerEventData eventData)
     {
         //Debug.Log(gameObject.name + " was clicked!");
+        if (dialogTextField != null)
+        {
+            dialogTextField.text = dialogTextToDisplay;
+        }
         canvasToDisplay.SetActive(true);
     }
 }
