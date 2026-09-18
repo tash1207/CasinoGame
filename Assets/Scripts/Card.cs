@@ -21,4 +21,21 @@ public class Card
         this.value = value;
         this.valueName = valueName;
     }
+
+    public string GetSuitName()
+    {
+        switch (suit)
+        {
+            case Suit.SPADE:
+                return "Spades";
+            case Suit.HEART:
+                return "Hearts";
+            case Suit.CLUB:
+                return "Clubs";
+            case Suit.DIAMOND:
+                return "Diamonds";
+            default:
+                return "";
+        }
+    }
 }

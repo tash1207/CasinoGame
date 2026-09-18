@@ -1,22 +1,34 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class CardManager : MonoBehaviour
 {
+    [Header("Hand Cards")]
     [SerializeField] CardDisplay cardDisplay1;
     [SerializeField] CardDisplay cardDisplay2;
-    private List<Card> cards;
+
+    [Header("Table Cards")]
+    [SerializeField] GameObject cardHolder;
+    [SerializeField] GameObject cardPrefab;
+
+    [SerializeField] GameObject dealButton;
+
+    private List<Card> allCards;
+    private List<Card> handCards;
+    private List<Card> tableCards;
 
     void OnEnable()
     {
         InitializeDeck();
-        cardDisplay1.SetCard(GetRandomCard());
-        cardDisplay2.SetCard(GetRandomCard());
     }
 
     void InitializeDeck()
     {
-        cards = new List<Card>();
+        allCards = new List<Card>();
+        handCards = new List<Card>();
+        tableCards = new List<Card>();
+
         for (int i = 2; i <= 14; i++)
         {
             string cardName = i.ToString();
@@ -40,19 +52,128 @@ public class CardManager : MonoBehaviour
             Card club = new Card(Card.Suit.CLUB, i, cardName);
             Card diamond = new Card(Card.Suit.DIAMOND, i, cardName);
 
-            cards.Add(spade);
-            cards.Add(heart);
-            cards.Add(club);
-            cards.Add(diamond);
+            allCards.Add(spade);
+            allCards.Add(heart);
+            allCards.Add(club);
+            allCards.Add(diamond);
         }
     }
 
     public Card GetRandomCard()
     {
-        Debug.Log("num cards left: " + cards.Count);
-        int index = Random.Range(0, cards.Count);
-        Card card = cards[index];
-        cards.Remove(card);
+        //Debug.Log("num cards left: " + allCards.Count);
+        int index = Random.Range(0, allCards.Count);
+        Card card = allCards[index];
+        allCards.Remove(card);
         return card;
+    }
+
+    public void DealCards()
+    {
+        Card randomCard1 = GetRandomCard();
+        cardDisplay1.SetCard(randomCard1);
+        Card randomCard2 = GetRandomCard();
+        cardDisplay2.SetCard(randomCard2);
+
+        handCards.Add(randomCard1);
+        handCards.Add(randomCard2);
+
+        cardDisplay1.gameObject.SetActive(true);
+        cardDisplay2.gameObject.SetActive(true);
+    }
+
+    public void Flop()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            AddTableCard();
+        }
+    }
+
+    void AddTableCard()
+    {
+        Card randomCard = GetRandomCard();
+        GameObject flopCard = Instantiate(
+            cardPrefab, Vector3.zero, Quaternion.identity, cardHolder.transform);
+        flopCard.GetComponent<CardDisplay>().SetCard(randomCard);
+        tableCards.Add(randomCard);
+    }
+
+    public void Turn()
+    {
+        AddTableCard();
+    }
+
+    public void River()
+    {
+        AddTableCard();
+        PrintHands();
+    }
+
+    public void Reset()
+    {
+        cardDisplay1.gameObject.SetActive(false);
+        cardDisplay2.gameObject.SetActive(false);
+
+        List<GameObject> cardsToDestroy = new List<GameObject>();
+        foreach (Transform child in cardHolder.transform)
+        {
+            cardsToDestroy.Add(child.gameObject);
+        }
+
+        foreach (GameObject card in cardsToDestroy)
+        {
+            Destroy(card);
+        }
+
+        dealButton.SetActive(true);
+        gameObject.SetActive(false);
+    }
+
+    void PrintHands()
+    {
+        CheckHighCard();
+        CheckPair();
+    }
+
+    void CheckHighCard()
+    {
+        Card currentHighCard = handCards[0];
+        if (handCards[1].value > currentHighCard.value)
+        {
+            currentHighCard = handCards[1];
+        }
+        foreach (var tableCard in tableCards)
+        {
+            if (tableCard.value > currentHighCard.value)
+            {
+                currentHighCard = tableCard;
+            }
+        }
+        Debug.Log("High Card: " + currentHighCard.valueName + " of " + currentHighCard.GetSuitName());
+    }
+
+    void CheckPair()
+    {
+        Card currentCard = handCards[0];
+        if (handCards[1].value == currentCard.value)
+        {
+            Debug.Log("Pair of " + currentCard.valueName + "s");
+        }
+        foreach (var tableCard in tableCards)
+        {
+            if (tableCard.value == currentCard.value)
+            {
+                Debug.Log("Pair of " + currentCard.valueName + "s");
+            }
+        }
+        currentCard = handCards[1];
+        foreach (var tableCard in tableCards)
+        {
+            if (tableCard.value == currentCard.value)
+            {
+                Debug.Log("Pair of " + currentCard.valueName + "s");
+            }
+        }
     }
 }
