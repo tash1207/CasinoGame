@@ -146,6 +146,8 @@ public class CardManager : MonoBehaviour
         tableCards.Clear();
         InitializeDeck();
 
+        showHandCanvas.SetActive(false);
+
         handCard1.gameObject.SetActive(false);
         handCard2.gameObject.SetActive(false);
 
