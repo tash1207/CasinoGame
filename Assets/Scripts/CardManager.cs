@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class CardManager : MonoBehaviour
@@ -12,6 +13,8 @@ public class CardManager : MonoBehaviour
     [SerializeField] GameObject cardPrefab;
 
     [SerializeField] GameObject dealButton;
+    [SerializeField] GameObject showHandCanvas;
+    [SerializeField] TMP_Text showHandText;
 
     private List<Card> allCards;
     private List<Card> handCards;
@@ -106,11 +109,20 @@ public class CardManager : MonoBehaviour
     public void River()
     {
         AddTableCard();
-        PrintHands();
+    }
+
+    public void ShowHand()
+    {
+        showHandText.text = "Your Hand:\n" + HandManager.GetHandText(handCards, tableCards);
+        showHandCanvas.SetActive(true);
     }
 
     public void Reset()
     {
+        handCards.Clear();
+        tableCards.Clear();
+        InitializeDeck();
+
         cardDisplay1.gameObject.SetActive(false);
         cardDisplay2.gameObject.SetActive(false);
 
@@ -126,12 +138,12 @@ public class CardManager : MonoBehaviour
         }
 
         dealButton.SetActive(true);
-        gameObject.SetActive(false);
     }
 
-    void PrintHands()
+    public void Exit()
     {
-        HandManager.CheckHand(handCards, tableCards);
+        Reset();
+        gameObject.SetActive(false);
     }
 
 }
