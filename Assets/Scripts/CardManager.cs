@@ -12,6 +12,10 @@ public class CardManager : MonoBehaviour
     [SerializeField] GameObject cardHolder;
     [SerializeField] GameObject cardPrefab;
 
+    [Header("Dealer Cards")]
+    [SerializeField] GameObject dealerCard1;
+    [SerializeField] GameObject dealerCard2;
+
     [SerializeField] GameObject dealButton;
     [SerializeField] GameObject showHandCanvas;
     [SerializeField] TMP_Text showHandText;
@@ -82,6 +86,9 @@ public class CardManager : MonoBehaviour
 
         cardDisplay1.gameObject.SetActive(true);
         cardDisplay2.gameObject.SetActive(true);
+
+        dealerCard1.gameObject.SetActive(true);
+        dealerCard2.gameObject.SetActive(true);
     }
 
     public void Flop()
@@ -96,7 +103,7 @@ public class CardManager : MonoBehaviour
     {
         Card randomCard = GetRandomCard();
         GameObject flopCard = Instantiate(
-            cardPrefab, Vector3.zero, Quaternion.identity, cardHolder.transform);
+            cardPrefab, cardHolder.transform.position, Quaternion.identity, cardHolder.transform);
         flopCard.GetComponent<CardDisplay>().SetCard(randomCard);
         tableCards.Add(randomCard);
     }
@@ -115,6 +122,9 @@ public class CardManager : MonoBehaviour
     {
         showHandText.text = "Your Hand:\n" + HandManager.GetHandText(handCards, tableCards);
         showHandCanvas.SetActive(true);
+
+        dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+        dealerCard2.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
     }
 
     public void Reset()
@@ -125,6 +135,11 @@ public class CardManager : MonoBehaviour
 
         cardDisplay1.gameObject.SetActive(false);
         cardDisplay2.gameObject.SetActive(false);
+
+        dealerCard1.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        dealerCard2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        dealerCard1.gameObject.SetActive(false);
+        dealerCard2.gameObject.SetActive(false);
 
         List<GameObject> cardsToDestroy = new List<GameObject>();
         foreach (Transform child in cardHolder.transform)
