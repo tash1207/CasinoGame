@@ -5,24 +5,26 @@ using UnityEngine;
 public class CardManager : MonoBehaviour
 {
     [Header("Hand Cards")]
-    [SerializeField] CardDisplay cardDisplay1;
-    [SerializeField] CardDisplay cardDisplay2;
+    [SerializeField] MeshCardDisplay handCard1;
+    [SerializeField] MeshCardDisplay handCard2;
 
     [Header("Table Cards")]
     [SerializeField] GameObject cardHolder;
     [SerializeField] GameObject cardPrefab;
 
     [Header("Dealer Cards")]
-    [SerializeField] GameObject dealerCard1;
-    [SerializeField] GameObject dealerCard2;
+    [SerializeField] MeshCardDisplay dealerCard1;
+    [SerializeField] MeshCardDisplay dealerCard2;
 
     [SerializeField] GameObject dealButton;
     [SerializeField] GameObject showHandCanvas;
     [SerializeField] TMP_Text showHandText;
+    [SerializeField] TMP_Text showDealerHandText;
 
     private List<Card> allCards;
     private List<Card> handCards;
     private List<Card> tableCards;
+    private List<Card> dealerCards;
 
     void OnEnable()
     {
@@ -34,6 +36,7 @@ public class CardManager : MonoBehaviour
         allCards = new List<Card>();
         handCards = new List<Card>();
         tableCards = new List<Card>();
+        dealerCards = new List<Card>();
 
         for (int i = 2; i <= 14; i++)
         {
@@ -70,6 +73,7 @@ public class CardManager : MonoBehaviour
         //Debug.Log("num cards left: " + allCards.Count);
         int index = Random.Range(0, allCards.Count);
         Card card = allCards[index];
+        Debug.Log("Dealing a " + card.valueName + " of " + card.GetSuitName());
         allCards.Remove(card);
         return card;
     }
@@ -77,18 +81,26 @@ public class CardManager : MonoBehaviour
     public void DealCards()
     {
         Card randomCard1 = GetRandomCard();
-        cardDisplay1.SetCard(randomCard1);
         Card randomCard2 = GetRandomCard();
-        cardDisplay2.SetCard(randomCard2);
+        Card randomCard3 = GetRandomCard();
+        Card randomCard4 = GetRandomCard();
 
-        handCards.Add(randomCard1);
-        handCards.Add(randomCard2);
-
-        cardDisplay1.gameObject.SetActive(true);
-        cardDisplay2.gameObject.SetActive(true);
-
+        handCard1.gameObject.SetActive(true);
+        handCard2.gameObject.SetActive(true);
         dealerCard1.gameObject.SetActive(true);
         dealerCard2.gameObject.SetActive(true);
+
+        handCards.Add(randomCard1);
+        handCard1.SetCard(randomCard1);
+        
+        dealerCards.Add(randomCard2);
+        dealerCard1.SetCard(randomCard2);
+
+        handCards.Add(randomCard3);
+        handCard2.SetCard(randomCard3);
+
+        dealerCards.Add(randomCard4);
+        dealerCard2.SetCard(randomCard4);
     }
 
     public void Flop()
@@ -102,9 +114,9 @@ public class CardManager : MonoBehaviour
     void AddTableCard()
     {
         Card randomCard = GetRandomCard();
-        GameObject flopCard = Instantiate(
+        GameObject tableCardDisplay = Instantiate(
             cardPrefab, cardHolder.transform.position, Quaternion.identity, cardHolder.transform);
-        flopCard.GetComponent<CardDisplay>().SetCard(randomCard);
+        tableCardDisplay.GetComponentInChildren<MeshCardDisplay>().SetCard(randomCard);
         tableCards.Add(randomCard);
     }
 
@@ -121,6 +133,7 @@ public class CardManager : MonoBehaviour
     public void ShowHand()
     {
         showHandText.text = "Your Hand:\n" + HandManager.GetHandText(handCards, tableCards);
+        showDealerHandText.text = "Dealer's Hand:\n" + HandManager.GetHandText(dealerCards, tableCards);
         showHandCanvas.SetActive(true);
 
         dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
@@ -133,8 +146,8 @@ public class CardManager : MonoBehaviour
         tableCards.Clear();
         InitializeDeck();
 
-        cardDisplay1.gameObject.SetActive(false);
-        cardDisplay2.gameObject.SetActive(false);
+        handCard1.gameObject.SetActive(false);
+        handCard2.gameObject.SetActive(false);
 
         dealerCard1.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         dealerCard2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
