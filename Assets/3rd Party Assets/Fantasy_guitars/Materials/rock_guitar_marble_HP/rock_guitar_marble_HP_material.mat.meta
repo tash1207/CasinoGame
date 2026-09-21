@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a1d532e100754d647994fa50bfbbcbb2
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 328574
+  packageName: Fantasy Guitars
+  packageVersion: 1.0
+  assetPath: Assets/Fantasy_guitars/Materials/rock_guitar_marble_HP/rock_guitar_marble_HP_material.mat
+  uploadId: 782447

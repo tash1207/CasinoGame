@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d52aa82b6936e3a4782abc93dba2f2ed
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 328574
+  packageName: Fantasy Guitars
+  packageVersion: 1.0
+  assetPath: Assets/Fantasy_guitars/Materials/block_guitar_bluemetal_HP/block_guitar_bluemetal_HP_material.mat
+  uploadId: 782447
