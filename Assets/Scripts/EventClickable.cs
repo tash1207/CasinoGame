@@ -4,14 +4,13 @@ using UnityEngine.EventSystems;
 
 public class EventClickable : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    [SerializeField]
-    GameObject canvasToDisplay;
+    [SerializeField] GameObject canvasToDisplay;
 
-    [SerializeField]
-    TMP_Text dialogTextField;
+    [SerializeField] TMP_Text titleField;
+    [SerializeField] TMP_Text textField;
 
-    [SerializeField]
-    string dialogTextToDisplay;
+    [SerializeField] string titleToDisplay;
+    [SerializeField] string textToDisplay;
 
 
     Vector2 cursorHotspot = new Vector2(16, 16); // Center of cursor image
@@ -33,9 +32,13 @@ public class EventClickable : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void OnPointerClick(PointerEventData eventData)
     {
         //Debug.Log(gameObject.name + " was clicked!");
-        if (dialogTextField != null)
+        if (titleField != null)
         {
-            dialogTextField.text = dialogTextToDisplay;
+            titleField.text = titleToDisplay;
+        }
+        if (textField != null)
+        {
+            textField.text = textToDisplay;
         }
         canvasToDisplay.SetActive(true);
     }
