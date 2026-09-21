@@ -1,18 +1,19 @@
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class NavigationZone : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("Cursor Settings")]
-    public Texture2D arrowCursor;
+    [SerializeField] Texture2D arrowCursor;
 
     [Header("Movement Settings")]
-    public Transform targetWayPoint; // Where the camera should go
-    public Transform cameraTransform; // Drag your Main Camera here
+    [SerializeField] CinemachineCamera zoneVirtualCamera;
 
     [Header("Navigation Zones")]
-    public GameObject[] disableZones;
-    public GameObject[] enableZones;
+    public NavZoneManager.NavView belongsToView;
+    [SerializeField] NavZoneManager.NavView targetView;
+
 
     Vector2 cursorHotspot = new Vector2(16, 16); // Center of cursor image
 
@@ -30,28 +31,15 @@ public class NavigationZone : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (targetWayPoint != null && cameraTransform != null)
-        {
-            // Reset cursor before moving so it doesn't get stuck
-            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-            
-            // Move and rotate the camera to the new node
-            cameraTransform.position = targetWayPoint.position;
-            cameraTransform.rotation = targetWayPoint.rotation;
+        // Reset cursor before moving so it doesn't get stuck
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
 
-            UpdateNavigationNodes();
-        }
+        zoneVirtualCamera.Prioritize();
+        NavZoneManager.Instance.ChangeView(targetView);
     }
 
-    private void UpdateNavigationNodes()
+    public void Toggle(bool active)
     {
-        foreach (var zone in disableZones)
-        {
-            zone.SetActive(false);
-        }
-        foreach (var zone in enableZones)
-        {
-            zone.SetActive(true);
-        }
+        gameObject.SetActive(active); 
     }
 }
