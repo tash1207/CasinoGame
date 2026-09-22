@@ -79,7 +79,6 @@ public class CardManager : MonoBehaviour
 
     public Card GetRandomCard()
     {
-        //Debug.Log("num cards left: " + allCards.Count);
         int index = Random.Range(0, allCards.Count);
         Card card = allCards[index];
         //Debug.Log("Dealing a " + card.valueName + " of " + card.GetSuitName());
@@ -150,14 +149,38 @@ public class CardManager : MonoBehaviour
             HighlightYourCards();
             whoWonText.text = "YOU WIN";
         }
-        else if (yourHand.score == dealersHand.score)
-        {
-            HighlightYourCards();
-            whoWonText.text = "CHOP";
-        } else
+        else if (dealersHand.score > yourHand.score)
         {
             HighlightDealersCards();
             whoWonText.text = "DEALER WINS";
+        }
+        else // yourHand.score == dealersHand.score
+        {
+            if (yourHand.kickers.Count == 0)
+            {
+                HighlightYourCards();
+                whoWonText.text = "CHOP";
+            }
+            for (int i = 0; i < yourHand.kickers.Count; i++)
+            {
+                if (yourHand.kickers[i].value > dealersHand.kickers[i].value)
+                {
+                    HighlightYourCards();
+                    whoWonText.text = "YOU WIN";
+                    break;
+                }
+                else if (dealersHand.kickers[i].value > yourHand.kickers[i].value)
+                {
+                    HighlightDealersCards();
+                    whoWonText.text = "DEALER WINS";
+                    break;
+                }
+                else if (i == yourHand.kickers.Count - 1)
+                {
+                    HighlightYourCards();
+                    whoWonText.text = "CHOP";
+                }
+            }
         }
 
         showHandText.text = "Your Hand:\n" + yourHand.handText;

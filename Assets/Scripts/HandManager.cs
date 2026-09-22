@@ -75,47 +75,69 @@ public static class HandManager
             else
             {
                 hand.handText = "Straight Flush of " + cards[0].GetSuitName();
-                hand.score = 9000 + cards[1].value;
+                int topCardValue = cards[0].value;
+                if (cards[0].value == 14 && cards[1].value == 5) // A2345 straight
+                {
+                    topCardValue = 5;
+                }
+                hand.score = 9000 + topCardValue;
             }
         }
     }
 
     static void HandCheckFoursAndFullHouse(Hand hand, List<Card> handAndTableCards)
     {
-        int numPairs = 0;
         int numThrees = 0;
+        int numPairs = 0;
+        Card threeVal = null;
+        Card pairVal = null;
+
         List<Card> winningCards = new List<Card>();
         for (int i = 0; i < handAndTableCards.Count - 1; i++)
         {
             Card currentCard = handAndTableCards[i];
             if (currentCard.value == handAndTableCards[i + 1].value)
             {
-                winningCards.Add(handAndTableCards[i]);
-                winningCards.Add(handAndTableCards[i + 1]);
                 if (i + 2 < handAndTableCards.Count && currentCard.value == handAndTableCards[i + 2].value)
                 {
+                    winningCards.Add(handAndTableCards[i]);
+                    winningCards.Add(handAndTableCards[i + 1]);
                     winningCards.Add(handAndTableCards[i + 2]);
                     if (i + 3 < handAndTableCards.Count && currentCard.value == handAndTableCards[i + 3].value)
                     {
                         winningCards.Add(handAndTableCards[i + 3]);
                         hand.handText = "4 of a kind: " + handAndTableCards[i].valueName + "s";
-                        hand.handCards = winningCards; // TODO: Add 5th card
-                        hand.score = 8000;
+                        hand.handCards = winningCards;
+                        hand.score = 8000 + (handAndTableCards[i].value * 10);
+
+                        foreach (var card in winningCards)
+                        {
+                            handAndTableCards.Remove(card);
+                        }
+                        hand.handCards.Add(handAndTableCards[0]);
+                        hand.kickers.Add(handAndTableCards[0]);
                         return;
                     }
                     numThrees++;
+                    threeVal = handAndTableCards[i];
                     i++;
                 }
                 else
                 {
-                    numPairs++;
+                    if (numPairs == 0)
+                    {
+                        winningCards.Add(handAndTableCards[i]);
+                        winningCards.Add(handAndTableCards[i + 1]);
+                        numPairs++;
+                        pairVal = handAndTableCards[i];
+                    }
                 }
             }
         }
-        if (numThrees == 1 && numPairs > 0) {
-            hand.handText = "Full House"; // TODO: Change to As and 4s
+        if (numThrees == 1 && numPairs > 0 && threeVal != null && pairVal != null) {
+            hand.handText = "Full House:\n" + threeVal.valueName + "s full of " + pairVal.valueName + "s";
             hand.handCards = winningCards;
-            hand.score = 7000;
+            hand.score = 7000 + (threeVal.value * 10) + pairVal.value;
             return;
         }
         
@@ -169,7 +191,8 @@ public static class HandManager
     {
         hand.handCards = cards.GetRange(0, 5);
         hand.handText = "Flush of " + cards[0].GetSuitName();
-        hand.score = 6000 + cards[0].value;
+        hand.score = 6000 + (cards[0].value * 10) + cards[1].value;
+        hand.kickers = hand.handCards;
     }
 
     static void HandCheckStraight(Hand hand, List<Card> handAndTableCards)
@@ -222,7 +245,12 @@ public static class HandManager
                     {
                         hand.handText = "Straight";
                         hand.handCards = winningCards.GetRange(0, 5);
-                        hand.score = 5000 + winningCards[1].value;
+                        int topCardValue = hand.handCards[0].value;
+                        if (hand.handCards[0].value == 14 && hand.handCards[1].value == 5) // A2345 straight
+                        {
+                            topCardValue = 5;
+                        }
+                        hand.score = 5000 + topCardValue;
                         return;
                     }
                     numInARow = 1;
@@ -234,7 +262,12 @@ public static class HandManager
             {
                 hand.handText = "Straight";
                 hand.handCards = winningCards.GetRange(0, 5);
-                hand.score = 5000 + winningCards[1].value;
+                int topCardValue = hand.handCards[0].value;
+                if (hand.handCards[0].value == 14 && hand.handCards[1].value == 5) // A2345 straight
+                {
+                    topCardValue = 5;
+                }
+                hand.score = 5000 + topCardValue;
                 return;
             }
         }
@@ -260,7 +293,16 @@ public static class HandManager
 
                     hand.handText = "3 of a kind: " + handAndTableCards[i].valueName + "s";
                     hand.handCards = winningCards;
-                    hand.score = 4000;
+                    hand.score = 4000 + handAndTableCards[i].value;
+
+                    foreach (var card in winningCards)
+                    {
+                        handAndTableCards.Remove(card);
+                    }
+                    hand.handCards.Add(handAndTableCards[0]);
+                    hand.handCards.Add(handAndTableCards[1]);
+                    hand.kickers.Add(handAndTableCards[0]);
+                    hand.kickers.Add(handAndTableCards[1]);
                     return;
                 }
                 else
@@ -280,7 +322,13 @@ public static class HandManager
         {
             hand.handText = "Two pair:\n" + handString;
             hand.handCards = winningCards;
-            hand.score = 3000 + winningCards[0].value;
+            hand.score = 3000 + (winningCards[0].value * 10) + winningCards[2].value;
+            foreach (var card in winningCards)
+            {
+                handAndTableCards.Remove(card);
+            }
+            hand.handCards.Add(handAndTableCards[0]);
+            hand.kickers.Add(handAndTableCards[0]);
             return;
         }
         else if (numPairs == 1)
@@ -288,6 +336,16 @@ public static class HandManager
             hand.handText = handString;
             hand.handCards = winningCards;
             hand.score = 2000 + winningCards[0].value;
+            foreach (var card in winningCards)
+            {
+                handAndTableCards.Remove(card);
+            }
+            hand.handCards.Add(handAndTableCards[0]);
+            hand.handCards.Add(handAndTableCards[1]);
+            hand.handCards.Add(handAndTableCards[2]);
+            hand.kickers.Add(handAndTableCards[0]);
+            hand.kickers.Add(handAndTableCards[1]);
+            hand.kickers.Add(handAndTableCards[2]);
             return;
         }
         
@@ -300,6 +358,7 @@ public static class HandManager
         hand.handText = "High Card: " + highCard.valueName;
         hand.handCards = handAndTableCards.GetRange(0, 5);
         hand.score = 1000 + highCard.value;
+        hand.kickers = hand.handCards;
     }
 
     static bool HasRoyalCards(List<Card> cards)
