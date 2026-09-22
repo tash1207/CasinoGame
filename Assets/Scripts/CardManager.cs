@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CardManager : MonoBehaviour
 {
@@ -26,6 +27,8 @@ public class CardManager : MonoBehaviour
     private List<Card> tableCards;
     private List<Card> dealerCards;
 
+    private List<GameObject> tableCardDisplays;
+
     void OnEnable()
     {
         InitializeDeck();
@@ -37,6 +40,8 @@ public class CardManager : MonoBehaviour
         handCards = new List<Card>();
         tableCards = new List<Card>();
         dealerCards = new List<Card>();
+
+        tableCardDisplays = new List<GameObject>();
 
         for (int i = 2; i <= 14; i++)
         {
@@ -73,7 +78,7 @@ public class CardManager : MonoBehaviour
         //Debug.Log("num cards left: " + allCards.Count);
         int index = Random.Range(0, allCards.Count);
         Card card = allCards[index];
-        Debug.Log("Dealing a " + card.valueName + " of " + card.GetSuitName());
+        //Debug.Log("Dealing a " + card.valueName + " of " + card.GetSuitName());
         allCards.Remove(card);
         return card;
     }
@@ -85,8 +90,8 @@ public class CardManager : MonoBehaviour
         Card randomCard3 = GetRandomCard();
         Card randomCard4 = GetRandomCard();
 
-        handCard1.gameObject.SetActive(true);
-        handCard2.gameObject.SetActive(true);
+        handCard1.transform.parent.gameObject.SetActive(true);
+        handCard2.transform.parent.gameObject.SetActive(true);
         dealerCard1.gameObject.SetActive(true);
         dealerCard2.gameObject.SetActive(true);
 
@@ -118,6 +123,7 @@ public class CardManager : MonoBehaviour
             cardPrefab, cardHolder.transform.position, Quaternion.identity, cardHolder.transform);
         tableCardDisplay.GetComponentInChildren<MeshCardDisplay>().SetCard(randomCard);
         tableCards.Add(randomCard);
+        tableCardDisplays.Add(tableCardDisplay);
     }
 
     public void Turn()
@@ -138,6 +144,31 @@ public class CardManager : MonoBehaviour
 
         dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
         dealerCard2.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+
+        HighlightWinningCards();
+    }
+
+    void HighlightWinningCards()
+    {
+        List<Card> winningCards = HandManager.GetWinningCards(handCards, tableCards);
+
+        foreach (var tableCardDisplay in tableCardDisplays)
+        {
+            Card tableCard = tableCardDisplay.GetComponentInChildren<MeshCardDisplay>().GetCard();
+            if (winningCards.Contains(tableCard))
+            {
+                tableCardDisplay.GetComponent<Outline>().enabled = true;
+            }
+        }
+
+        if (winningCards.Contains(handCard1.GetCard()))
+        {
+            handCard1.gameObject.GetComponentInParent<Outline>().enabled = true;
+        }
+        if (winningCards.Contains(handCard2.GetCard()))
+        {
+            handCard2.gameObject.GetComponentInParent<Outline>().enabled = true;
+        }
     }
 
     public void Reset()
@@ -148,8 +179,11 @@ public class CardManager : MonoBehaviour
 
         showHandCanvas.SetActive(false);
 
-        handCard1.gameObject.SetActive(false);
-        handCard2.gameObject.SetActive(false);
+        handCard1.gameObject.GetComponentInParent<Outline>().enabled = false;
+        handCard2.gameObject.GetComponentInParent<Outline>().enabled = false;
+
+        handCard1.transform.parent.gameObject.SetActive(false);
+        handCard2.transform.parent.gameObject.SetActive(false);
 
         dealerCard1.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         dealerCard2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);

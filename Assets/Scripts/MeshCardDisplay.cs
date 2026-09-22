@@ -9,14 +9,21 @@ public class MeshCardDisplay : MonoBehaviour
     [SerializeField] Mesh[] allDiamonds;
 
     private MeshFilter meshFilter;
+    private Card card;
 
     void Awake()
     {
         meshFilter = GetComponent<MeshFilter>();
     }
 
+    public Card GetCard()
+    {
+        return card;
+    }
+
     public void SetCard(Card card)
     {
+        this.card = card;
         switch (card.suit)
         {
             case Card.Suit.SPADE:
