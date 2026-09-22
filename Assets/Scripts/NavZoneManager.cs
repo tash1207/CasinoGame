@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class NavZoneManager : MonoBehaviour
@@ -14,6 +15,7 @@ public class NavZoneManager : MonoBehaviour
 
     [Header("Current State")]
     [SerializeField] NavView currentView = NavView.CasinoFacingPoker;
+    [SerializeField] CinemachineCamera defaultVirtualCamera;
 
     public static NavZoneManager Instance { get; private set; }
     
@@ -30,6 +32,7 @@ public class NavZoneManager : MonoBehaviour
     private void Start()
     {
         UpdateZones();
+        defaultVirtualCamera.Prioritize();
     }
 
     public void ChangeView(NavView newView)
