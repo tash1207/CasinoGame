@@ -3,33 +3,23 @@ using UnityEngine;
 
 public static class HandManager
 {
-    public static string GetHandText(List<Card> handCards, List<Card> tableCards)
+    public static Hand GetHand(List<Card> handCards, List<Card> tableCards)
     {
         List<Card> allCards = new List<Card>();
         allCards.AddRange(handCards);
         allCards.AddRange(tableCards);
         allCards.Sort((p1, p2) => p2.value.CompareTo(p1.value));
 
-        // Debug.Log("Full hand of cards: ");
-        // foreach (var card in handCards)
-        // {
-        //     Debug.Log(card.valueName + " of " + card.GetSuitName());
-        // }
+        Hand hand = new Hand();
+        HandCheckStraightFlush(hand, allCards);
 
-        return CheckStraightFlush(allCards);
+        Debug.Log("Hand: " + hand.handText);
+        Debug.Log("Score: " + hand.score);
+
+        return hand;
     }
 
-    public static List<Card> GetWinningCards(List<Card> handCards, List<Card> tableCards)
-    {
-        List<Card> allCards = new List<Card>();
-        allCards.AddRange(handCards);
-        allCards.AddRange(tableCards);
-        allCards.Sort((p1, p2) => p2.value.CompareTo(p1.value));
-
-        return GetStraightFlushWinningCards(allCards);
-    }
-
-    static string CheckStraightFlush(List<Card> handAndTableCards)
+    static void HandCheckStraightFlush(Hand hand, List<Card> handAndTableCards)
     {
         List<Card> spades = new List<Card>();
         List<Card> hearts = new List<Card>();
@@ -48,114 +38,49 @@ public static class HandManager
                 diamonds.Add(card);
         }
 
-        if (spades.Count >= 5)
+        if (spades.Count >= 5 && CheckStraight(spades))
         {
-            Debug.Log("Flush of Spades");
-            if (CheckStraight(spades))
-                return HasRoyalCards(spades) ? "Royal Flush of Spades" : "Straight Flush of Spades";
+            GetStraightFlushHand(hand, spades);
+            return;
         }
-        if (hearts.Count >= 5)
+        else if (hearts.Count >= 5 && CheckStraight(hearts))
         {
-            Debug.Log("Flush of Hearts");
-            if (CheckStraight(hearts))
-                return HasRoyalCards(hearts) ? "Royal Flush of Hearts" :  "Straight Flush of Hearts";
+            GetStraightFlushHand(hand, hearts);
+            return;
         }
-        if (clubs.Count >= 5)
+        if (clubs.Count >= 5 && CheckStraight(clubs))
         {
-            Debug.Log("Flush of Clubs");
-            if (CheckStraight(clubs))
-                return HasRoyalCards(clubs) ? "Royal Flush of Clubs" :  "Straight Flush of Clubs";
+            GetStraightFlushHand(hand, clubs);
+            return;
         }
-        if (diamonds.Count >= 5)
+        if (diamonds.Count >= 5 && CheckStraight(diamonds))
         {
-            Debug.Log("Flush of Diamonds");
-            if (CheckStraight(diamonds))
-                return HasRoyalCards(diamonds) ? "Royal Flush of Diamonds" :  "Straight Flush of Diamonds";
+            GetStraightFlushHand(hand, diamonds);
+            return;
         }
-        return CheckFoursAndFullHouse(handAndTableCards);
+
+        HandCheckFoursAndFullHouse(hand, handAndTableCards);
     }
 
-    static List<Card> GetStraightFlushWinningCards(List<Card> handAndTableCards)
+    static void GetStraightFlushHand(Hand hand, List<Card> cards)
     {
-        List<Card> spades = new List<Card>();
-        List<Card> hearts = new List<Card>();
-        List<Card> clubs = new List<Card>();
-        List<Card> diamonds = new List<Card>();
-
-        foreach (var card in handAndTableCards)
+        if (CheckStraight(cards))
         {
-            if (card.suit == Card.Suit.SPADE)
-                spades.Add(card);
-            if (card.suit == Card.Suit.HEART)
-                hearts.Add(card);
-            if (card.suit == Card.Suit.CLUB)
-                clubs.Add(card);
-            if (card.suit == Card.Suit.DIAMOND)
-                diamonds.Add(card);
+            hand.handCards = cards.GetRange(0, 5);
+            if (HasRoyalCards(cards))
+            {
+                hand.handText = "Royal Flush of " + cards[0].GetSuitName();
+                hand.score = 10000;
+            }
+            else
+            {
+                hand.handText = "Straight Flush of " + cards[0].GetSuitName();
+                hand.score = 9000 + cards[1].value;
+            }
         }
-
-        if (spades.Count >= 5)
-        {
-            Debug.Log("Flush of Spades");
-            if (CheckStraight(spades))
-                return spades.GetRange(0, 5);
-        }
-        if (hearts.Count >= 5)
-        {
-            Debug.Log("Flush of Hearts");
-            if (CheckStraight(hearts))
-                return hearts.GetRange(0, 5);
-        }
-        if (clubs.Count >= 5)
-        {
-            Debug.Log("Flush of Clubs");
-            if (CheckStraight(clubs))
-                return clubs.GetRange(0, 5);
-        }
-        if (diamonds.Count >= 5)
-        {
-            Debug.Log("Flush of Diamonds");
-            if (CheckStraight(diamonds))
-                return diamonds.GetRange(0, 5);
-        }
-        return GetFoursAndFullHouseWinningCards(handAndTableCards);
     }
 
-    static bool HasRoyalCards(List<Card> cards)
-    {
-        bool hasAce = false;
-        bool hasKing = false;
-        bool hasQueen = false;
-        bool hasJack = false;
-        bool hasTen = false;
-
-        foreach (var card in cards)
-        {
-            if (card.value == 14)
-            {
-                hasAce = true;
-            }
-            else if (card.value == 13)
-            {
-                hasKing = true;
-            }
-            else if (card.value == 12)
-            {
-                hasQueen = true;
-            }
-            else if (card.value == 11)
-            {
-                hasJack = true;
-            }
-            else if (card.value == 10)
-            {
-                hasTen = true;
-            }
-        }
-        return hasAce && hasKing && hasQueen && hasJack && hasTen;
-    }
-
-    static string CheckFoursAndFullHouse(List<Card> handAndTableCards)
+    static void HandCheckFoursAndFullHouse(Hand hand, List<Card> handAndTableCards)
     {
         int numPairs = 0;
         int numThrees = 0;
@@ -173,106 +98,31 @@ public static class HandManager
                     if (i + 3 < handAndTableCards.Count && currentCard.value == handAndTableCards[i + 3].value)
                     {
                         winningCards.Add(handAndTableCards[i + 3]);
-                        return "4 of a kind: " + handAndTableCards[i].valueName + "s";
+                        hand.handText = "4 of a kind: " + handAndTableCards[i].valueName + "s";
+                        hand.handCards = winningCards; // TODO: Add 5th card
+                        hand.score = 8000;
+                        return;
                     }
-                    Debug.Log("3 of a kind of " + handAndTableCards[i].valueName + "s");
                     numThrees++;
                     i++;
                 }
                 else
                 {
-                    Debug.Log("Pair of " + handAndTableCards[i].valueName + "s");
                     numPairs++;
                 }
             }
         }
-        if (numThrees == 1 && numPairs > 0) return "Full House!";
-        return CheckFlush(handAndTableCards);
+        if (numThrees == 1 && numPairs > 0) {
+            hand.handText = "Full House"; // TODO: Change to As and 4s
+            hand.handCards = winningCards;
+            hand.score = 7000;
+            return;
+        }
+        
+        HandCheckFlush(hand, handAndTableCards);
     }
 
-    static List<Card> GetFoursAndFullHouseWinningCards(List<Card> handAndTableCards)
-    {
-        int numPairs = 0;
-        int numThrees = 0;
-        List<Card> winningCards = new List<Card>();
-        for (int i = 0; i < handAndTableCards.Count - 1; i++)
-        {
-            Card currentCard = handAndTableCards[i];
-            if (currentCard.value == handAndTableCards[i + 1].value)
-            {
-                if (i + 2 < handAndTableCards.Count && currentCard.value == handAndTableCards[i + 2].value)
-                {
-                    winningCards.Add(handAndTableCards[i]);
-                    winningCards.Add(handAndTableCards[i + 1]);
-                    winningCards.Add(handAndTableCards[i + 2]);
-                    if (i + 3 < handAndTableCards.Count && currentCard.value == handAndTableCards[i + 3].value)
-                    {
-                        winningCards.Add(handAndTableCards[i + 3]);
-                        return winningCards;
-                    }
-                    Debug.Log("3 of a kind of " + handAndTableCards[i].valueName + "s");
-                    numThrees++;
-                    i++;
-                }
-                else
-                {
-                    Debug.Log("Pair of " + handAndTableCards[i].valueName + "s");
-                    numPairs++;
-                    if (numPairs < 2)
-                    {
-                        winningCards.Add(handAndTableCards[i]);
-                        winningCards.Add(handAndTableCards[i + 1]);
-                    }
-                }
-            }
-        }
-        if (numThrees == 1 && numPairs > 0) return winningCards;
-        return GetFlushWinningCards(handAndTableCards);
-    }
-
-    static string CheckFlush(List<Card> handAndTableCards)
-    {
-        int numSpades = 0;
-        int numHearts = 0;
-        int numClubs = 0;
-        int numDiamonds = 0;
-
-        foreach (var card in handAndTableCards)
-        {
-            if (card.suit == Card.Suit.SPADE)
-                numSpades++;
-            if (card.suit == Card.Suit.HEART)
-                numHearts++;
-            if (card.suit == Card.Suit.CLUB)
-                numClubs++;
-            if (card.suit == Card.Suit.DIAMOND)
-                numDiamonds++;
-        }
-
-        if (numSpades >= 5)
-        {
-            Debug.Log("Flush of Spades");
-            return "Flush of Spades";
-        }
-        if (numHearts >= 5)
-        {
-            Debug.Log("Flush of Hearts");
-            return "Flush of Hearts";
-        }
-        if (numClubs >= 5)
-        {
-            Debug.Log("Flush of Clubs");
-            return "Flush of Clubs";
-        }
-        if (numDiamonds >= 5)
-        {
-            Debug.Log("Flush of Diamonds");
-            return "Flush of Diamonds";
-        }
-        return CheckStraightString(handAndTableCards);
-    }
-
-    static List<Card> GetFlushWinningCards(List<Card> handAndTableCards)
+    static void HandCheckFlush(Hand hand, List<Card> handAndTableCards)
     {
         List<Card> spades = new List<Card>();
         List<Card> hearts = new List<Card>();
@@ -293,89 +143,39 @@ public static class HandManager
 
         if (spades.Count >= 5)
         {
-            return spades.GetRange(0, 5);
+            GetFlushHand(hand, spades);
+            return;
         }
         if (hearts.Count >= 5)
         {
-            return hearts.GetRange(0, 5);
+            GetFlushHand(hand, hearts);
+            return;
         }
         if (clubs.Count >= 5)
         {
-            return clubs.GetRange(0, 5);
+            GetFlushHand(hand, clubs);
+            return;
         }
         if (diamonds.Count >= 5)
         {
-            return diamonds.GetRange(0, 5);
+            GetFlushHand(hand, diamonds);
+            return;
         }
-        return GetStraightWinningCards(handAndTableCards);
+
+        HandCheckStraight(hand, handAndTableCards);
     }
 
-    static string CheckStraightString(List<Card> handAndTableCards)
+    static void GetFlushHand(Hand hand, List<Card> cards)
     {
-        if (CheckStraight(handAndTableCards)) return "Straight";
-        else return CheckPairs(handAndTableCards);
+        hand.handCards = cards.GetRange(0, 5);
+        hand.handText = "Flush of " + cards[0].GetSuitName();
+        hand.score = 6000 + cards[0].value;
     }
 
-    static bool CheckStraight(List<Card> handAndTableCards)
-    {
-        int maxNumInARow = 1;
-        int numInARow = 1;
-        for (int i = 0; i < handAndTableCards.Count; i++)
-        {
-            Card currentCard = handAndTableCards[i];
-            if (currentCard.value == 2 && handAndTableCards[0].value == 14)
-            {
-                numInARow++;
-                if (numInARow > maxNumInARow)
-                {
-                    maxNumInARow = numInARow;
-                }
-                break;
-            }
-            if (i + 1 >= handAndTableCards.Count)
-            {
-                break;
-            }
-            if (currentCard.value == handAndTableCards[i + 1].value)
-            {
-                continue;
-            }
-            else if (currentCard.value == handAndTableCards[i + 1].value + 1)
-            {
-                numInARow++;
-                if (numInARow > maxNumInARow)
-                {
-                    maxNumInARow = numInARow;
-                }
-            }
-            else
-            {
-                if (numInARow > maxNumInARow)
-                {
-                    maxNumInARow = numInARow;
-                }
-                numInARow = 1;
-            }
-        }
-
-        Debug.Log("maxNumInARow = " + maxNumInARow);
-        if (maxNumInARow >= 5)
-        {
-            Debug.Log("Straight!");
-            return true;
-        }
-
-        return false;
-    }
-
-    static List<Card> GetStraightWinningCards(List<Card> handAndTableCards)
+    static void HandCheckStraight(Hand hand, List<Card> handAndTableCards)
     {
         if (CheckStraight(handAndTableCards))
         {
-            // Test cases:
-            // A K K Q Q J 10
-            // A K Q 5 4 3 2
-            // 9 8 7 6 5 4 3
             int maxNumInARow = 1;
             int numInARow = 1;
             List<Card> winningCards = new List<Card>();
@@ -420,7 +220,10 @@ public static class HandManager
                     }
                     if (maxNumInARow >= 5)
                     {
-                        return winningCards.GetRange(0, 5);
+                        hand.handText = "Straight";
+                        hand.handCards = winningCards.GetRange(0, 5);
+                        hand.score = 5000 + winningCards[1].value;
+                        return;
                     }
                     numInARow = 1;
                     winningCards.Clear();
@@ -429,46 +232,20 @@ public static class HandManager
 
             if (maxNumInARow >= 5)
             {
-                return winningCards.GetRange(0, 5);
+                hand.handText = "Straight";
+                hand.handCards = winningCards.GetRange(0, 5);
+                hand.score = 5000 + winningCards[1].value;
+                return;
             }
         }
-        return CheckPairsWinningCards(handAndTableCards);
+
+        HandCheckPairs(hand, handAndTableCards);
     }
 
-    static string CheckPairs(List<Card> handAndTableCards)
+    static void HandCheckPairs(Hand hand, List<Card> handAndTableCards)
     {
         int numPairs = 0;
-        List<Card> winningCards = new List<Card>();
-        string returnString = "";
-        for (int i = 0; i < handAndTableCards.Count - 1; i++)
-        {
-            Card currentCard = handAndTableCards[i];
-            if (currentCard.value == handAndTableCards[i + 1].value)
-            {
-                winningCards.Add(handAndTableCards[i]);
-                winningCards.Add(handAndTableCards[i + 1]);
-                if (i + 2 < handAndTableCards.Count && currentCard.value == handAndTableCards[i + 2].value)
-                {
-                    winningCards.Add(handAndTableCards[i + 2]);
-                    Debug.Log("3 of a kind of " + handAndTableCards[i].valueName + "s");
-                    return "3 of a kind: " + handAndTableCards[i].valueName + "s";
-                }
-                else
-                {
-                    Debug.Log("Pair of " + handAndTableCards[i].valueName + "s");
-                    numPairs++;
-                    if (numPairs < 3)
-                        returnString += "Pair of " + handAndTableCards[i].valueName + "s\n";
-                }
-            }
-        }
-        if (numPairs > 1) return "Two pair!\n" + returnString;
-        return returnString != "" ? returnString : CheckHighCard(handAndTableCards);
-    }
-
-    static List<Card> CheckPairsWinningCards(List<Card> handAndTableCards)
-    {
-        int numPairs = 0;
+        string handString = "";
         List<Card> winningCards = new List<Card>();
         for (int i = 0; i < handAndTableCards.Count - 1; i++)
         {
@@ -480,36 +257,132 @@ public static class HandManager
                     winningCards.Add(handAndTableCards[i]);
                     winningCards.Add(handAndTableCards[i + 1]);
                     winningCards.Add(handAndTableCards[i + 2]);
-                    Debug.Log("3 of a kind of " + handAndTableCards[i].valueName + "s");
-                    return winningCards;
+
+                    hand.handText = "3 of a kind: " + handAndTableCards[i].valueName + "s";
+                    hand.handCards = winningCards;
+                    hand.score = 4000;
+                    return;
                 }
                 else
                 {
-                    Debug.Log("Pair of " + handAndTableCards[i].valueName + "s");
                     numPairs++;
                     if (numPairs < 3)
                     {
                         winningCards.Add(handAndTableCards[i]);
                         winningCards.Add(handAndTableCards[i + 1]);
+                        handString += "Pair of " + handAndTableCards[i].valueName + "s\n";
                     }
                 }
             }
         }
-        // TODO: Use winning cards to score hand.
-        if (numPairs > 1) return winningCards;
-        return winningCards.Count > 1 ? winningCards : CheckHighCardWinningCards(handAndTableCards);
+
+        if (numPairs > 1) 
+        {
+            hand.handText = "Two pair:\n" + handString;
+            hand.handCards = winningCards;
+            hand.score = 3000 + winningCards[0].value;
+            return;
+        }
+        else if (numPairs == 1)
+        {
+            hand.handText = handString;
+            hand.handCards = winningCards;
+            hand.score = 2000 + winningCards[0].value;
+            return;
+        }
+        
+        HandCheckHighCard(hand, handAndTableCards);
     }
 
-    static string CheckHighCard(List<Card> handAndTableCards)
+    static void HandCheckHighCard(Hand hand, List<Card> handAndTableCards)
     {
         Card highCard = handAndTableCards[0];
-        Debug.Log("High Card: " + highCard.valueName + " of " + highCard.GetSuitName());
-        return "High Card: " + highCard.valueName;
+        hand.handText = "High Card: " + highCard.valueName;
+        hand.handCards = handAndTableCards.GetRange(0, 5);
+        hand.score = 1000 + highCard.value;
     }
 
-    static List<Card> CheckHighCardWinningCards(List<Card> handAndTableCards)
+    static bool HasRoyalCards(List<Card> cards)
     {
-        return handAndTableCards.GetRange(0, 1);
-        // return handAndTableCards.GetRange(0, 5);
+        bool hasAce = false;
+        bool hasKing = false;
+        bool hasQueen = false;
+        bool hasJack = false;
+        bool hasTen = false;
+
+        foreach (var card in cards)
+        {
+            if (card.value == 14)
+            {
+                hasAce = true;
+            }
+            else if (card.value == 13)
+            {
+                hasKing = true;
+            }
+            else if (card.value == 12)
+            {
+                hasQueen = true;
+            }
+            else if (card.value == 11)
+            {
+                hasJack = true;
+            }
+            else if (card.value == 10)
+            {
+                hasTen = true;
+            }
+        }
+        return hasAce && hasKing && hasQueen && hasJack && hasTen;
+    }
+
+    static bool CheckStraight(List<Card> handAndTableCards)
+    {
+        int maxNumInARow = 1;
+        int numInARow = 1;
+        for (int i = 0; i < handAndTableCards.Count; i++)
+        {
+            Card currentCard = handAndTableCards[i];
+            if (currentCard.value == 2 && handAndTableCards[0].value == 14)
+            {
+                numInARow++;
+                if (numInARow > maxNumInARow)
+                {
+                    maxNumInARow = numInARow;
+                }
+                break;
+            }
+            if (i + 1 >= handAndTableCards.Count)
+            {
+                break;
+            }
+            if (currentCard.value == handAndTableCards[i + 1].value)
+            {
+                continue;
+            }
+            else if (currentCard.value == handAndTableCards[i + 1].value + 1)
+            {
+                numInARow++;
+                if (numInARow > maxNumInARow)
+                {
+                    maxNumInARow = numInARow;
+                }
+            }
+            else
+            {
+                if (numInARow > maxNumInARow)
+                {
+                    maxNumInARow = numInARow;
+                }
+                numInARow = 1;
+            }
+        }
+
+        if (maxNumInARow >= 5)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

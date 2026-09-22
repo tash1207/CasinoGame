@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class Card
 {
     public enum Suit

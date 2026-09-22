@@ -138,34 +138,35 @@ public class CardManager : MonoBehaviour
 
     public void ShowHand()
     {
-        showHandText.text = "Your Hand:\n" + HandManager.GetHandText(handCards, tableCards);
-        showDealerHandText.text = "Dealer's Hand:\n" + HandManager.GetHandText(dealerCards, tableCards);
+        Hand yourHand = HandManager.GetHand(handCards, tableCards);
+        Hand dealersHand = HandManager.GetHand(dealerCards, tableCards);
+
+        showHandText.text = "Your Hand:\n" + yourHand.handText;
+        showDealerHandText.text = "Dealer's Hand:\n" + dealersHand.handText;
         showHandCanvas.SetActive(true);
 
         dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
         dealerCard2.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
 
-        HighlightWinningCards();
+        HighlightYourCards(yourHand);
     }
 
-    void HighlightWinningCards()
+    void HighlightYourCards(Hand yourHand)
     {
-        List<Card> winningCards = HandManager.GetWinningCards(handCards, tableCards);
-
         foreach (var tableCardDisplay in tableCardDisplays)
         {
             Card tableCard = tableCardDisplay.GetComponentInChildren<MeshCardDisplay>().GetCard();
-            if (winningCards.Contains(tableCard))
+            if (yourHand.handCards.Contains(tableCard))
             {
                 tableCardDisplay.GetComponent<Outline>().enabled = true;
             }
         }
 
-        if (winningCards.Contains(handCard1.GetCard()))
+        if (yourHand.handCards.Contains(handCard1.GetCard()))
         {
             handCard1.gameObject.GetComponentInParent<Outline>().enabled = true;
         }
-        if (winningCards.Contains(handCard2.GetCard()))
+        if (yourHand.handCards.Contains(handCard2.GetCard()))
         {
             handCard2.gameObject.GetComponentInParent<Outline>().enabled = true;
         }
