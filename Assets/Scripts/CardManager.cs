@@ -18,9 +18,10 @@ public class CardManager : MonoBehaviour
     [SerializeField] MeshCardDisplay dealerCard2;
 
     [SerializeField] GameObject dealButton;
-    [SerializeField] GameObject showHandCanvas;
+    [SerializeField] GameObject gameOverCanvas;
     [SerializeField] TMP_Text showHandText;
     [SerializeField] TMP_Text showDealerHandText;
+    [SerializeField] TMP_Text whoWonText;
 
     private List<Card> allCards;
     private List<Card> handCards;
@@ -147,21 +148,21 @@ public class CardManager : MonoBehaviour
         if (yourHand.score > dealersHand.score)
         {
             HighlightYourCards();
-            Debug.Log("You won!");
+            whoWonText.text = "YOU WIN";
         }
         else if (yourHand.score == dealersHand.score)
         {
             HighlightYourCards();
-            Debug.Log("TIE");
+            whoWonText.text = "CHOP";
         } else
         {
             HighlightDealersCards();
-            Debug.Log("You lose");
+            whoWonText.text = "DEALER WINS";
         }
 
         showHandText.text = "Your Hand:\n" + yourHand.handText;
         showDealerHandText.text = "Dealer's Hand:\n" + dealersHand.handText;
-        showHandCanvas.SetActive(true);
+        gameOverCanvas.SetActive(true);
 
         dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
         dealerCard2.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
@@ -233,7 +234,7 @@ public class CardManager : MonoBehaviour
         tableCards.Clear();
         InitializeDeck();
 
-        showHandCanvas.SetActive(false);
+        gameOverCanvas.SetActive(false);
 
         handCard1.gameObject.GetComponentInParent<Outline>().enabled = false;
         handCard2.gameObject.GetComponentInParent<Outline>().enabled = false;
