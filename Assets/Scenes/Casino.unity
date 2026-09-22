@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 3375130}
   - component: {fileID: 3375129}
   - component: {fileID: 3375128}
+  - component: {fileID: 3375131}
   m_Layer: 5
   m_Name: YesButton
   m_TagString: Untagged
@@ -226,18 +227,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 1185020933}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
 --- !u!114 &3375129
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,6 +265,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3375126}
   m_CullTransparentMesh: 1
+--- !u!114 &3375131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3375126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0def3d02d4270417187ae2daee4164dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NavigationZone
+  arrowCursor: {fileID: 2800000, guid: b47efd6240dce4e1080db448fb19aa7b, type: 3}
+  zoneVirtualCamera: {fileID: 1185020935}
+  belongsToView: 1
+  targetView: 4
 --- !u!1 &24684850
 GameObject:
   m_ObjectHideFlags: 0
@@ -3278,7 +3283,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4, z: -5}
+  m_LocalPosition: {x: 0, y: 0, z: 20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9957,7 +9962,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1185020934
 Transform:
   m_ObjectHideFlags: 0
@@ -9987,7 +9992,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
   Priority:
     Enabled: 1
-    m_Value: 10
+    m_Value: 0
   OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20241001
@@ -13987,6 +13992,7 @@ GameObject:
   - component: {fileID: 1827022661}
   - component: {fileID: 1827022660}
   - component: {fileID: 1827022659}
+  - component: {fileID: 1827022662}
   m_Layer: 5
   m_Name: ExitButton
   m_TagString: Untagged
@@ -14070,18 +14076,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1185020933}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1393076485}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
@@ -14132,6 +14126,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1827022657}
   m_CullTransparentMesh: 1
+--- !u!114 &1827022662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827022657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0def3d02d4270417187ae2daee4164dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NavigationZone
+  arrowCursor: {fileID: 2800000, guid: b47efd6240dce4e1080db448fb19aa7b, type: 3}
+  zoneVirtualCamera: {fileID: 1088769247}
+  belongsToView: 4
+  targetView: 1
 --- !u!1001 &1834097544
 PrefabInstance:
   m_ObjectHideFlags: 0
