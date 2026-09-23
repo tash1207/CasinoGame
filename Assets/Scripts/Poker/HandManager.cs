@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,6 +6,10 @@ public static class HandManager
 {
     public static Hand GetHand(List<Card> handCards, List<Card> tableCards)
     {
+        if (handCards.Count == 0)
+        {
+            Debug.Log("Checking table hand");
+        }
         List<Card> allCards = new List<Card>();
         allCards.AddRange(handCards);
         allCards.AddRange(tableCards);
@@ -258,6 +263,8 @@ public static class HandManager
                 }
             }
 
+            hand.numInARow = maxNumInARow;
+
             if (maxNumInARow >= 5)
             {
                 hand.handText = "Straight";
@@ -340,12 +347,11 @@ public static class HandManager
             {
                 handAndTableCards.Remove(card);
             }
-            hand.handCards.Add(handAndTableCards[0]);
-            hand.handCards.Add(handAndTableCards[1]);
-            hand.handCards.Add(handAndTableCards[2]);
-            hand.kickers.Add(handAndTableCards[0]);
-            hand.kickers.Add(handAndTableCards[1]);
-            hand.kickers.Add(handAndTableCards[2]);
+            for (int i = 0; i < Math.Min(handAndTableCards.Count, 3); i++)
+            {
+                hand.handCards.Add(handAndTableCards[i]);
+                hand.kickers.Add(handAndTableCards[i]);
+            }
             return;
         }
         
@@ -356,7 +362,7 @@ public static class HandManager
     {
         Card highCard = handAndTableCards[0];
         hand.handText = "High Card: " + highCard.valueName;
-        hand.handCards = handAndTableCards.GetRange(0, 5);
+        hand.handCards = handAndTableCards.GetRange(0, Math.Min(handAndTableCards.Count, 5));
         hand.score = 1000 + highCard.value;
         hand.kickers = hand.handCards;
     }

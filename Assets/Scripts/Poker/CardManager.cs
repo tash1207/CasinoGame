@@ -24,9 +24,9 @@ public class CardManager : MonoBehaviour
     [SerializeField] TMP_Text whoWonText;
 
     private List<Card> allCards;
-    private List<Card> handCards;
-    private List<Card> tableCards;
-    private List<Card> dealerCards;
+    public List<Card> handCards { get; private set; }
+    public List<Card> tableCards { get; private set; }
+    public List<Card> dealerCards { get; private set; }
 
     private Hand yourHand;
     private Hand dealersHand;
@@ -81,7 +81,7 @@ public class CardManager : MonoBehaviour
     {
         int index = Random.Range(0, allCards.Count);
         Card card = allCards[index];
-        //Debug.Log("Dealing a " + card.valueName + " of " + card.GetSuitName());
+        Debug.Log("Dealing a " + card.valueName + " of " + card.GetSuitName());
         allCards.Remove(card);
         return card;
     }
@@ -139,52 +139,86 @@ public class CardManager : MonoBehaviour
         AddTableCard();
     }
 
-    public void ShowHand()
+    public void ShowHand(int currentPot)
     {
         yourHand = HandManager.GetHand(handCards, tableCards);
         dealersHand = HandManager.GetHand(dealerCards, tableCards);
 
         if (yourHand.score > dealersHand.score)
         {
-            HighlightYourCards();
-            whoWonText.text = "YOU WIN";
+            YouWin(currentPot);
         }
         else if (dealersHand.score > yourHand.score)
         {
-            HighlightDealersCards();
-            whoWonText.text = "DEALER WINS";
+            DealerWins(currentPot);
         }
         else // yourHand.score == dealersHand.score
         {
             if (yourHand.kickers.Count == 0)
             {
-                HighlightYourCards();
-                whoWonText.text = "CHOP";
+                Chop(currentPot);
             }
             for (int i = 0; i < yourHand.kickers.Count; i++)
             {
                 if (yourHand.kickers[i].value > dealersHand.kickers[i].value)
                 {
-                    HighlightYourCards();
-                    whoWonText.text = "YOU WIN";
+                    YouWin(currentPot);
                     break;
                 }
                 else if (dealersHand.kickers[i].value > yourHand.kickers[i].value)
                 {
-                    HighlightDealersCards();
-                    whoWonText.text = "DEALER WINS";
+                    DealerWins(currentPot);
                     break;
                 }
                 else if (i == yourHand.kickers.Count - 1)
                 {
-                    HighlightYourCards();
-                    whoWonText.text = "CHOP";
+                    Chop(currentPot);
                 }
             }
         }
 
         showHandText.text = "Your Hand:\n" + yourHand.handText;
         showDealerHandText.text = "Dealer's Hand:\n" + dealersHand.handText;
+        gameOverCanvas.SetActive(true);
+
+        dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+        dealerCard2.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+    }
+
+    void YouWin(int currentPot)
+    {
+        HighlightYourCards();
+        whoWonText.text = "YOU WIN $" + currentPot;
+    }
+
+    void DealerWins(int currentPot)
+    {
+        HighlightDealersCards();
+        whoWonText.text = "DEALER WINS $" + currentPot;
+    }
+
+    void Chop(int currentPot)
+    {
+        HighlightYourCards();
+        whoWonText.text = "CHOP $" + currentPot;
+    }
+
+    public void DealerFold(int currentPot)
+    {
+        whoWonText.text = "YOU WIN $" + currentPot;
+        showHandText.text = "You win by default";
+        showDealerHandText.text = "Dealer folded";
+        gameOverCanvas.SetActive(true);
+
+        dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+        dealerCard2.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+    }
+
+    public void PlayerFold(int currentPot)
+    {
+        whoWonText.text = "DEALER WINS $" + currentPot;
+        showHandText.text = "You folded";
+        showDealerHandText.text = "Dealer wins by default";
         gameOverCanvas.SetActive(true);
 
         dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
@@ -283,13 +317,11 @@ public class CardManager : MonoBehaviour
         {
             Destroy(card);
         }
-
-        dealButton.SetActive(true);
     }
 
     public void Exit()
     {
-        Reset();
+        //Reset();
         gameObject.SetActive(false);
     }
 
