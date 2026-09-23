@@ -10,6 +10,7 @@ public class EventClickable : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     [SerializeField] TMP_Text textField;
 
     [SerializeField] string titleToDisplay;
+    [TextArea(2, 5)]
     [SerializeField] string textToDisplay;
 
 
