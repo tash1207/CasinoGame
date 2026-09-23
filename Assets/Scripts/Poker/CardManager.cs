@@ -17,7 +17,6 @@ public class CardManager : MonoBehaviour
     [SerializeField] MeshCardDisplay dealerCard1;
     [SerializeField] MeshCardDisplay dealerCard2;
 
-    [SerializeField] GameObject dealButton;
     [SerializeField] GameObject gameOverCanvas;
     [SerializeField] TMP_Text showHandText;
     [SerializeField] TMP_Text showDealerHandText;
@@ -321,7 +320,6 @@ public class CardManager : MonoBehaviour
 
     public void Exit()
     {
-        //Reset();
         gameObject.SetActive(false);
     }
 

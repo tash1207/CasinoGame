@@ -20,6 +20,7 @@ public class PokerGameManager : MonoBehaviour
     [SerializeField] GameObject advanceButton;
     [SerializeField] GameObject checkButton;
     [SerializeField] GameObject callButton;
+    [SerializeField] GameObject betButton;
     [SerializeField] GameObject foldButton;
     [SerializeField] GameObject playAgainButton;
     [SerializeField] GameObject anteButton;
@@ -114,7 +115,12 @@ public class PokerGameManager : MonoBehaviour
         EndGame();
     }
 
-    public void Bet(bool isPlayer, int betValue)
+    public void Bet1()
+    {
+        Bet(true, 1);
+    }
+
+    void Bet(bool isPlayer, int betValue)
     {
         currentBetValue = betValue;
         currentPot += betValue;
@@ -258,6 +264,7 @@ public class PokerGameManager : MonoBehaviour
         Debug.Log("ToggleActions " + enabled);
         checkButton.SetActive(false);
         callButton.SetActive(false);
+        betButton.SetActive(false);
         foldButton.SetActive(false);
         playAgainButton.SetActive(false);
 
@@ -274,6 +281,7 @@ public class PokerGameManager : MonoBehaviour
         {
             if (currentBetValue == 0)
             {
+                betButton.SetActive(true);
                 checkButton.SetActive(true);
             }
             else
