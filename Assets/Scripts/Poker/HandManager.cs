@@ -168,6 +168,9 @@ public static class HandManager
                 diamonds.Add(card);
         }
 
+        hand.numSameSuit = Math.Max(spades.Count, Math.Max(hearts.Count, Math.Max(clubs.Count, diamonds.Count)));
+        Debug.Log(hand.numSameSuit + " same suit");
+
         if (spades.Count >= 5)
         {
             GetFlushHand(hand, spades);

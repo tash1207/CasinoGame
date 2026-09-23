@@ -62,9 +62,9 @@ public class PokerGameManager : MonoBehaviour
         if (isPlayer)
         {
             moveHistory.text += "\nYou check";
-            if ((currentRound == Round.PreFlop || currentRound == Round.River) && DealerHasGoodHand())
+            if (DealerHasGoodHand() || DealerShouldBet())
             {
-                Debug.Log("Dealer has decent hand");
+                Debug.Log("Dealer should bet");
                 Bet(false, 1);
             }
             else if (UnityEngine.Random.Range(0f, 1f) > 0.8)
@@ -128,12 +128,17 @@ public class PokerGameManager : MonoBehaviour
         {
             moveHistory.text += "\nYou bet $" + betValue;
             // Dealer can call or fold
-            if (DealerHasGoodHand())
+            if (DealerHasGoodHand() || DealerHasChance())
             {
                 Debug.Log("Dealer should call");
                 // Dealer call
                 Call(false);
                 CanAdvance(true);
+            }
+            else if (DealerShouldFold())
+            {
+                Debug.Log("Dealer should fold");
+                Fold(false);
             }
             else
             {
@@ -186,12 +191,112 @@ public class PokerGameManager : MonoBehaviour
             cardManager.dealerCards[0].suit == cardManager.dealerCards[1].suit || // Has suited cards
             Math.Abs(cardManager.dealerCards[0].value - cardManager.dealerCards[1].value) == 1; // Has 2 in a row
         }
+        else // Cards on the table
+        {
+            List<Card> emptyList = new List<Card>();
+            Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
+            if (currentRound == Round.Flop)
+            {
+                return dealersHand.score > 2005 && dealersHand.score > tableHand.score; // Has pair of 6s or better
+            }
+            else
+            {
+                return dealersHand.score > 2010 && dealersHand.score > tableHand.score; // Has pair of jacks or better
+            }
+        }
+    }
+
+    bool DealerHasChance()
+    {
+        if (currentRound == Round.PreFlop)
+        {
+            return DealerHasGoodHand();
+        }
+
+        List<Card> emptyList = new List<Card>();
+        Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
+        Hand dealersHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
+        if (currentRound == Round.Flop)
+        {
+            if (dealersHand.score > 2003)
+            {
+                Debug.Log("Has better than pair of 3s");
+                return true;
+            }
+            if (cardManager.dealerCards[0].value >= 12 || cardManager.dealerCards[1].value >= 12)
+            {
+                Debug.Log("Has A, K or Q in hand");
+                return true;
+            }
+            if (dealersHand.numSameSuit >= 4 ||
+                (dealersHand.numSameSuit >= 3 && tableHand.numSameSuit < 3))
+            {
+                Debug.Log("Has at least 3 suited cards not from table");
+                return true;
+            }
+            if (dealersHand.numInARow >= 4 ||
+                (dealersHand.numInARow >= 3 && tableHand.numInARow < 3))
+            {
+                // TODO: Figure out straight gap logic like AK J10 (just needs Q)
+                Debug.Log("Has at least 3 in a row not from table");
+                return true;
+            }
+        }
+        else if (currentRound == Round.Turn)
+        {
+            if (dealersHand.score > tableHand.score)
+            {
+                Debug.Log("Dealer has better hand than table");
+                return true;
+            }
+            if (tableHand.numSameSuit >= 3 && dealersHand.score > tableHand.score)
+            {
+                Debug.Log("Dealer can compete with flush draw");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool DealerShouldBet()
+    {
+        if (currentRound == Round.PreFlop)
+        {
+            return false;
+        }
         else
         {
             List<Card> emptyList = new List<Card>();
             Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
-            return dealersHand.score > 2011 && dealersHand.score > tableHand.score; // Has pair of queens or better
+            Hand dealersHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
+            if (currentRound == Round.Flop)
+            {
+                if (dealersHand.numSameSuit >= 4 && tableHand.numSameSuit < 4)
+                {
+                    Debug.Log("Has 4 suited cards not from table");
+                    return true;
+                }
+                if (dealersHand.numInARow >= 4)
+                {
+                    // TODO: Figure out straight gap logic like AK J10 (just needs Q)
+                    Debug.Log("Has 4 in a row not from table");
+                    return true;
+                }
+            }
         }
+        return false;
+    }
+
+    bool DealerShouldFold()
+    {
+        if (currentRound == Round.River)
+        {
+            List<Card> emptyList = new List<Card>();
+            Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
+            Hand dealersHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
+            return dealersHand.score == tableHand.score;
+        }
+        return false;
     }
 
     void CanAdvance(bool value)
@@ -261,7 +366,6 @@ public class PokerGameManager : MonoBehaviour
 
     void ToggleAvailableActions(bool enabled)
     {
-        Debug.Log("ToggleActions " + enabled);
         checkButton.SetActive(false);
         callButton.SetActive(false);
         betButton.SetActive(false);

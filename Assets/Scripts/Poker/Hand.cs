@@ -7,6 +7,7 @@ public class Hand
     public int score;
     public List<Card> kickers;
     public int numInARow;
+    public int numSameSuit;
 
     public Hand()
     {
