@@ -12384,7 +12384,8 @@ MonoBehaviour:
   playAgainButton: {fileID: 1442595884}
   anteButton: {fileID: 781250422}
   chipHolder: {fileID: 228334731}
-  chipPrefab: {fileID: 1348643311587070366, guid: ace1c5977e54a4c5a94ec19fec581f3b, type: 3}
+  chip1Prefab: {fileID: 1348643311587070366, guid: ace1c5977e54a4c5a94ec19fec581f3b, type: 3}
+  chip5Prefab: {fileID: 786136239785319026, guid: dcc7c64c4e7b448e696fcdef08998c98, type: 3}
   currentRound: 0
   antePrice: 1
   currentPot: 0
