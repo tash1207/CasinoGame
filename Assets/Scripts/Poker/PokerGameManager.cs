@@ -68,6 +68,7 @@ public class PokerGameManager : MonoBehaviour
         AddChipToPot(true);
         moveHistory.text += "\nYou put $" + antePrice + " into the pot";
         cardManager.DealCards();
+        moveHistory.text += "\nThe cards are dealt";
         currentRound = Round.PreFlop;
         anteButton.SetActive(false);
         ToggleAvailableActions(true);
