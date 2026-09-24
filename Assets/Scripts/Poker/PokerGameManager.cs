@@ -20,10 +20,15 @@ public class PokerGameManager : MonoBehaviour
     [SerializeField] GameObject advanceButton;
     [SerializeField] GameObject checkButton;
     [SerializeField] GameObject callButton;
-    [SerializeField] GameObject betButton;
+    [SerializeField] GameObject betButton1;
+    [SerializeField] GameObject betButton2;
     [SerializeField] GameObject foldButton;
     [SerializeField] GameObject playAgainButton;
     [SerializeField] GameObject anteButton;
+
+    [Header("Chips")]
+    [SerializeField] GameObject chipHolder;
+    [SerializeField] GameObject chipPrefab;
 
     public Round currentRound;
     public int antePrice = 1;
@@ -46,10 +51,21 @@ public class PokerGameManager : MonoBehaviour
         moveHistory.text = "New game";
         anteButton.SetActive(true);
     }
+    void AddChipToPot(bool isPlayer)
+    {
+        Vector3 chipPosition = Vector3.zero;
+        chipPosition.x += UnityEngine.Random.Range(0, 200);
+        chipPosition.y += UnityEngine.Random.Range(0, 100);
+        if (isPlayer) chipPosition.y *= -1;
+        GameObject chip =
+            Instantiate(chipPrefab, Vector3.zero, chipPrefab.transform.rotation, chipHolder.transform);
+        chip.transform.localPosition = chipPosition;
+    }
 
     public void Ante()
     {
         currentPot += antePrice;
+        AddChipToPot(true);
         moveHistory.text += "\nYou put $" + antePrice + " into the pot";
         cardManager.DealCards();
         currentRound = Round.PreFlop;
@@ -65,12 +81,26 @@ public class PokerGameManager : MonoBehaviour
             if (DealerHasGoodHand() || DealerShouldBet())
             {
                 Debug.Log("Dealer should bet");
-                Bet(false, 1);
+                if (UnityEngine.Random.Range(0f, 1f) > 0.2)
+                {
+                    Bet(false, 1);
+                }
+                else
+                {
+                    Bet(false, 2);
+                }
             }
             else if (UnityEngine.Random.Range(0f, 1f) > 0.8)
             {
                 Debug.Log("Dealer randomly decided to bet");
-                Bet(false, 1);
+                if (UnityEngine.Random.Range(0f, 1f) > 0.1)
+                {
+                    Bet(false, 1);
+                }
+                else
+                {
+                    Bet(false, 2);
+                }
             }
             else
             {
@@ -88,6 +118,7 @@ public class PokerGameManager : MonoBehaviour
     public void Call(bool isPlayer)
     {
         currentPot += currentBetValue;
+        AddChipToPot(isPlayer);
         if (isPlayer)
         {
             moveHistory.text += "\nYou call $" + currentBetValue;
@@ -120,10 +151,19 @@ public class PokerGameManager : MonoBehaviour
         Bet(true, 1);
     }
 
+    public void Bet2()
+    {
+        Bet(true, 2);
+    }
+
     void Bet(bool isPlayer, int betValue)
     {
         currentBetValue = betValue;
         currentPot += betValue;
+        for (int i = 0; i < betValue; i++)
+        {
+            AddChipToPot(isPlayer);
+        }
         if (isPlayer)
         {
             moveHistory.text += "\nYou bet $" + betValue;
@@ -142,7 +182,14 @@ public class PokerGameManager : MonoBehaviour
             }
             else
             {
-                if (UnityEngine.Random.Range(0f, 1f) > 0.25)
+                if (currentBetValue == 1 && UnityEngine.Random.Range(0f, 1f) > 0.3)
+                {
+                    Debug.Log("Dealer randomly decided to call");
+                    // Dealer call
+                    Call(false);
+                    CanAdvance(true);
+                }
+                else if (currentBetValue > 1 && UnityEngine.Random.Range(0f, 1f) > 0.85)
                 {
                     Debug.Log("Dealer randomly decided to call");
                     // Dealer call
@@ -368,7 +415,8 @@ public class PokerGameManager : MonoBehaviour
     {
         checkButton.SetActive(false);
         callButton.SetActive(false);
-        betButton.SetActive(false);
+        betButton1.SetActive(false);
+        betButton2.SetActive(false);
         foldButton.SetActive(false);
         playAgainButton.SetActive(false);
 
@@ -385,7 +433,8 @@ public class PokerGameManager : MonoBehaviour
         {
             if (currentBetValue == 0)
             {
-                betButton.SetActive(true);
+                betButton1.SetActive(true);
+                betButton2.SetActive(true);
                 checkButton.SetActive(true);
             }
             else
@@ -402,5 +451,21 @@ public class PokerGameManager : MonoBehaviour
         currentRound = Round.End;
         ToggleAvailableActions(false);
         playAgainButton.SetActive(true);
+
+        ResetChips();
+    }
+
+    public void ResetChips()
+    {
+        List<GameObject> chipsToDestroy = new List<GameObject>();
+        foreach (Transform child in chipHolder.transform)
+        {
+            chipsToDestroy.Add(child.gameObject);
+        }
+
+        foreach (GameObject chip in chipsToDestroy)
+        {
+            Destroy(chip);
+        }
     }
 }

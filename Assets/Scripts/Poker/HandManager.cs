@@ -337,8 +337,11 @@ public static class HandManager
             {
                 handAndTableCards.Remove(card);
             }
-            hand.handCards.Add(handAndTableCards[0]);
-            hand.kickers.Add(handAndTableCards[0]);
+            if (handAndTableCards.Count > 0)
+            {
+                hand.handCards.Add(handAndTableCards[0]);
+                hand.kickers.Add(handAndTableCards[0]);
+            }
             return;
         }
         else if (numPairs == 1)
