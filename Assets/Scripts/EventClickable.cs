@@ -14,19 +14,19 @@ public class EventClickable : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     [SerializeField] string textToDisplay;
 
 
-    Vector2 cursorHotspot = new Vector2(16, 16); // Center of cursor image
+    Vector2 defaultCursorHotspot = new Vector2(14, 11);
 
     public Texture2D hoverCursor;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Cursor.SetCursor(hoverCursor, cursorHotspot, CursorMode.Auto);
+        Cursor.SetCursor(hoverCursor, defaultCursorHotspot, CursorMode.Auto);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         // Reset to default system cursor when leaving the zone
-        Cursor.SetCursor(null, cursorHotspot, CursorMode.Auto);
+        Cursor.SetCursor(null, defaultCursorHotspot, CursorMode.Auto);
     }
 
     // Detects clicks and touches
