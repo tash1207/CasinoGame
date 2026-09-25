@@ -31,6 +31,7 @@ public class PokerGameManager : MonoBehaviour
     [SerializeField] GameObject chipHolder;
     [SerializeField] GameObject chip1Prefab;
     [SerializeField] GameObject chip5Prefab;
+    [SerializeField] TMP_Text currentPotText;
 
     public Round currentRound;
     public int antePrice = 1;
@@ -46,12 +47,19 @@ public class PokerGameManager : MonoBehaviour
         Initialize();
     }
 
+    void SetCurrentPot(int value)
+    {
+        currentPot = value;
+        currentPotText.text = "Current Pot: $" + currentPot;
+    }
+
     public void Initialize()
     {
         currentRound = Round.PreDeal;
         currentBetValue = 0;
         totalBetValue = 0;
-        currentPot = 0;
+        SetCurrentPot(0);
+        ResetChips();
         moveHistory.text = "New game";
         anteButton.SetActive(true);
     }
@@ -60,6 +68,7 @@ public class PokerGameManager : MonoBehaviour
         Vector3 chipPosition = Vector3.zero;
         chipPosition.x += UnityEngine.Random.Range(0, 200);
         chipPosition.y += UnityEngine.Random.Range(0, 100);
+        if (chipAmount > 1 && UnityEngine.Random.Range(0f, 1f) > 0.4) chipPosition.z = -1;
         if (isPlayer) chipPosition.y *= -1;
         GameObject chip =
             Instantiate(chipAmount == 1 ? chip1Prefab : chip5Prefab, Vector3.zero, chip1Prefab.transform.rotation, chipHolder.transform);
@@ -68,7 +77,7 @@ public class PokerGameManager : MonoBehaviour
 
     public void Ante()
     {
-        currentPot += antePrice;
+        SetCurrentPot(currentPot + antePrice);
         for (int i = 0; i < antePrice; i++)
         {
             AddChipToPot(true, 1);
@@ -130,7 +139,7 @@ public class PokerGameManager : MonoBehaviour
 
     public void Call(bool isPlayer)
     {
-        currentPot += currentBetValue;
+        SetCurrentPot(currentPot + currentBetValue);
         for (int i = 0; i < currentBetValue; i++)
         {
             AddChipToPot(isPlayer, 1);
@@ -177,7 +186,7 @@ public class PokerGameManager : MonoBehaviour
     {
         totalBetValue = betValue;
         currentBetValue = betValue;
-        currentPot += betValue;
+        SetCurrentPot(currentPot + betValue);
         for (int i = 0; i < betValue; i++)
         {
             if (betValue - i >= 5)
@@ -251,13 +260,13 @@ public class PokerGameManager : MonoBehaviour
     // betValue is amount over the current bet
     void Raise(bool isPlayer, int betValue)
     {
-        currentPot += currentBetValue + betValue;
+        SetCurrentPot(currentPot + currentBetValue + betValue);
         for (int i = 0; i < currentBetValue + betValue; i++)
         {
             if (currentBetValue + betValue - i >= 5)
             {
                 AddChipToPot(isPlayer, 5);
-                i += 5;
+                i += 4;
             }
             else
             {
@@ -623,8 +632,6 @@ public class PokerGameManager : MonoBehaviour
         currentRound = Round.End;
         ToggleAvailableActions(false);
         playAgainButton.SetActive(true);
-
-        ResetChips();
     }
 
     public void ResetChips()
