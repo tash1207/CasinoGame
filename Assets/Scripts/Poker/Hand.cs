@@ -6,8 +6,9 @@ public class Hand
     public List<Card> handCards;
     public int score;
     public List<Card> kickers;
-    public int numInARow;
-    public int numSameSuit;
+    public int numInARow = 0;
+    public int numSameSuit = 0;
+    public Card.Suit suit;
 
     public Hand()
     {

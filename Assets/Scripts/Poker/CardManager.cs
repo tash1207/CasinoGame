@@ -188,6 +188,7 @@ public class CardManager : MonoBehaviour
     {
         HighlightYourCards();
         whoWonText.text = "YOU WIN $" + currentPot;
+        MoneyManager.Instance.AddMoney(currentPot);
     }
 
     void DealerWins(int currentPot)
@@ -200,6 +201,9 @@ public class CardManager : MonoBehaviour
     {
         HighlightYourCards();
         whoWonText.text = "CHOP $" + currentPot;
+        whoWonText.text += "\nDealer gets $" + (currentPot + 1)/2;
+        whoWonText.text += "\nYou get $" + (currentPot - 1)/2;
+        MoneyManager.Instance.AddMoney((currentPot - 1)/2);
     }
 
     public void DealerFold(int currentPot)
@@ -207,6 +211,7 @@ public class CardManager : MonoBehaviour
         whoWonText.text = "YOU WIN $" + currentPot;
         showHandText.text = "You win by default";
         showDealerHandText.text = "Dealer folded";
+        MoneyManager.Instance.AddMoney(currentPot);
         gameOverCanvas.SetActive(true);
 
         dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);

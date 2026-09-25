@@ -123,8 +123,18 @@ public static class HandManager
                         hand.kickers.Add(handAndTableCards[0]);
                         return;
                     }
-                    numThrees++;
-                    threeVal = handAndTableCards[i];
+                    if (numThrees == 0)
+                    {
+                        numThrees++;
+                        threeVal = handAndTableCards[i];
+                    }
+                    else if (numPairs == 0)
+                    {
+                        numPairs++;
+                        pairVal = handAndTableCards[i];
+                        winningCards.Remove(handAndTableCards[i + 2]);
+                        break;
+                    }
                     i++;
                 }
                 else
@@ -139,7 +149,7 @@ public static class HandManager
                 }
             }
         }
-        if (numThrees == 1 && numPairs > 0 && threeVal != null && pairVal != null) {
+        if (numThrees > 0 && numPairs > 0 && threeVal != null && pairVal != null) {
             hand.handText = "Full House:\n" + threeVal.valueName + "s full of " + pairVal.valueName + "s";
             hand.handCards = winningCards;
             hand.score = 7000 + (threeVal.value * 10) + pairVal.value;
@@ -168,8 +178,27 @@ public static class HandManager
                 diamonds.Add(card);
         }
 
-        hand.numSameSuit = Math.Max(spades.Count, Math.Max(hearts.Count, Math.Max(clubs.Count, diamonds.Count)));
-        Debug.Log(hand.numSameSuit + " same suit");
+        if (spades.Count > hand.numSameSuit)
+        {
+            hand.numSameSuit = spades.Count;
+            hand.suit = Card.Suit.SPADE;
+        }
+        if (hearts.Count > hand.numSameSuit)
+        {
+            hand.numSameSuit = hearts.Count;
+            hand.suit = Card.Suit.HEART;
+        }
+        if (clubs.Count > hand.numSameSuit)
+        {
+            hand.numSameSuit = clubs.Count;
+            hand.suit = Card.Suit.CLUB;
+        }
+        if (diamonds.Count > hand.numSameSuit)
+        {
+            hand.numSameSuit = diamonds.Count;
+            hand.suit = Card.Suit.DIAMOND;
+        }
+        Debug.Log(hand.numSameSuit + " same suit (" + hand.suit + ")");
 
         if (spades.Count >= 5)
         {
@@ -309,10 +338,11 @@ public static class HandManager
                     {
                         handAndTableCards.Remove(card);
                     }
-                    hand.handCards.Add(handAndTableCards[0]);
-                    hand.handCards.Add(handAndTableCards[1]);
-                    hand.kickers.Add(handAndTableCards[0]);
-                    hand.kickers.Add(handAndTableCards[1]);
+                    for (int j = 0; i < Math.Min(handAndTableCards.Count, 2); j++)
+                    {
+                        hand.handCards.Add(handAndTableCards[i]);
+                        hand.kickers.Add(handAndTableCards[i]);
+                    }
                     return;
                 }
                 else
