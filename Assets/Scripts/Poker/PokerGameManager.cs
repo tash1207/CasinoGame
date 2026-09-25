@@ -23,6 +23,7 @@ public class PokerGameManager : MonoBehaviour
     [SerializeField] GameObject betButton1;
     [SerializeField] GameObject betButton2;
     [SerializeField] GameObject foldButton;
+    [SerializeField] GameObject raiseButton;
     [SerializeField] GameObject playAgainButton;
     [SerializeField] GameObject anteButton;
 
@@ -37,6 +38,7 @@ public class PokerGameManager : MonoBehaviour
 
     private CardManager cardManager;
     private int currentBetValue = 0;
+    private int totalBetValue = 0;
 
     void Awake()
     {
@@ -48,6 +50,7 @@ public class PokerGameManager : MonoBehaviour
     {
         currentRound = Round.PreDeal;
         currentBetValue = 0;
+        totalBetValue = 0;
         currentPot = 0;
         moveHistory.text = "New game";
         anteButton.SetActive(true);
@@ -86,18 +89,18 @@ public class PokerGameManager : MonoBehaviour
             if (DealerHasGreatHand())
             {
                 Debug.Log("Dealer bets high for great hand");
-                Bet(false, currentPot > 10 ? 5 : 2);
+                Bet(false, currentPot > 25 ? 10 : (currentPot > 10 ? 6 : 3));
             }
             else if (DealerHasGoodHand() || DealerShouldBet())
             {
                 Debug.Log("Dealer should bet");
                 if (UnityEngine.Random.Range(0f, 1f) > 0.2)
                 {
-                    Bet(false, 1);
+                    Bet(false, currentPot > 20 ? 5 : (currentPot > 9 ? 4 : 2));
                 }
                 else
                 {
-                    Bet(false, 2);
+                    Bet(false, currentPot > 10 ? 5 : 2);
                 }
             }
             else if (UnityEngine.Random.Range(0f, 1f) > 0.85)
@@ -141,6 +144,7 @@ public class PokerGameManager : MonoBehaviour
             moveHistory.text += "\nDealer calls $" + currentBetValue;
         }
         currentBetValue = 0;
+        totalBetValue = 0;
         CanAdvance(true);
     }
 
@@ -171,6 +175,7 @@ public class PokerGameManager : MonoBehaviour
 
     void Bet(bool isPlayer, int betValue)
     {
+        totalBetValue = betValue;
         currentBetValue = betValue;
         currentPot += betValue;
         for (int i = 0; i < betValue; i++)
@@ -179,9 +184,11 @@ public class PokerGameManager : MonoBehaviour
             {
                 AddChipToPot(isPlayer, 5);
                 i += 5;
-                continue;
             }
-            AddChipToPot(isPlayer, 1);
+            else
+            {
+                AddChipToPot(isPlayer, 1);
+            }
         }
         if (isPlayer)
         {
@@ -236,21 +243,74 @@ public class PokerGameManager : MonoBehaviour
         }
     }
 
-    public void Raise(bool isPlayer, int betValue)
+    public void Raise()
     {
-        currentPot += betValue;
+        Raise(true, currentBetValue);
+    }
+
+    // betValue is amount over the current bet
+    void Raise(bool isPlayer, int betValue)
+    {
+        currentPot += currentBetValue + betValue;
         for (int i = 0; i < currentBetValue + betValue; i++)
         {
             if (currentBetValue + betValue - i >= 5)
             {
                 AddChipToPot(isPlayer, 5);
                 i += 5;
-                continue;
             }
-            AddChipToPot(isPlayer, 1);
+            else
+            {
+                AddChipToPot(isPlayer, 1);
+            }
         }
-        moveHistory.text += "\nDealer raised to $" + (currentBetValue + betValue);
-        currentBetValue = betValue;
+        if (isPlayer)
+        {
+            moveHistory.text += "\nYou raised to $" + (totalBetValue + betValue);
+            currentBetValue = betValue;
+            totalBetValue += currentBetValue;
+            // Dealer move
+            if (DealerHasGreatHand() || DealerHasGoodHand())
+            {
+                Debug.Log("Dealer should call");
+                // Dealer call
+                Call(false);
+                CanAdvance(true);
+            }
+            else if (DealerShouldFold())
+            {
+                Debug.Log("Dealer should fold");
+                Fold(false);
+            }
+            else
+            {
+                if (currentBetValue <= 4 && DealerHasChance())
+                {
+                    Debug.Log("Dealer has chance and decided to call low raise");
+                    // Dealer call
+                    Call(false);
+                    CanAdvance(true);
+                }
+                else if (currentBetValue > 4 && DealerHasChance() && UnityEngine.Random.Range(0f, 1f) > 0.4)
+                {
+                    Debug.Log("Dealer has chance and decided to call high raise");
+                    // Dealer call
+                    Call(false);
+                    CanAdvance(true);
+                }
+                else
+                {
+                    Debug.Log("Dealer randomly decided to fold");
+                    Fold(false);
+                }
+            }
+        }
+        else
+        {
+            moveHistory.text += "\nDealer raised to $" + (totalBetValue + betValue);
+            currentBetValue = betValue;
+            totalBetValue += currentBetValue;
+        }
     }
 
     bool DealerHasGreatHand()
@@ -276,7 +336,22 @@ public class PokerGameManager : MonoBehaviour
                 hasGreatHand = true;
             }
         }
-        if (currentRound == Round.Turn || currentRound == Round.River)
+        else if (currentRound == Round.Flop)
+        {
+            List<Card> emptyList = new List<Card>();
+            Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
+            if (dealersHand.score >= 4004 && dealersHand.score > tableHand.score)
+            {
+                Debug.Log("Hit 3 of a kind, 4s or higher");
+                hasGreatHand = true;
+            }
+            if (dealersHand.score >= 3120 && tableHand.score < 2013)
+            {
+                Debug.Log("Has 2 pair with highest at least Qs");
+                hasGreatHand = true;
+            }
+        }
+        else if (currentRound == Round.Turn || currentRound == Round.River)
         {
             List<Card> emptyList = new List<Card>();
             Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
@@ -512,6 +587,7 @@ public class PokerGameManager : MonoBehaviour
         betButton1.SetActive(false);
         betButton2.SetActive(false);
         foldButton.SetActive(false);
+        raiseButton.SetActive(false);
         playAgainButton.SetActive(false);
 
         if (!enabled)
@@ -535,6 +611,8 @@ public class PokerGameManager : MonoBehaviour
             {
                 callButton.GetComponentInChildren<TextMeshProUGUI>().text = "Call $" + currentBetValue;
                 callButton.SetActive(true);
+                raiseButton.GetComponentInChildren<TextMeshProUGUI>().text = "Raise to $" + (totalBetValue + currentBetValue);
+                raiseButton.SetActive(true);
                 foldButton.SetActive(true);
             }
         }
