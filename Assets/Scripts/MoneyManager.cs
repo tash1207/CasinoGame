@@ -6,12 +6,22 @@ public class MoneyManager : MonoBehaviour
     public static MoneyManager Instance { get; private set; }
 
     [SerializeField] TMP_Text currentMoneyText;
-    public int currentMoney = 100;
+    int currentMoney = 30;
 
     void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+    }
+
+    void Start()
+    {
+        currentMoneyText.text = "$" + currentMoney;
+    }
+
+    public int GetCurrentMoney()
+    {
+        return currentMoney;
     }
 
     public void AddMoney(int amount)

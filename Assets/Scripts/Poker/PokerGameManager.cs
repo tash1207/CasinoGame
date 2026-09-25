@@ -17,6 +17,9 @@ public class PokerGameManager : MonoBehaviour
     }
 
     [SerializeField] TMP_Text moveHistory;
+    [SerializeField] GameObject notEnoughMoneyText;
+
+    [Header("Action Buttons")]
     [SerializeField] GameObject advanceButton;
     [SerializeField] GameObject checkButton;
     [SerializeField] GameObject callButton;
@@ -33,6 +36,7 @@ public class PokerGameManager : MonoBehaviour
     [SerializeField] GameObject chip5Prefab;
     [SerializeField] TMP_Text currentPotText;
 
+    [Header("Game Info")]
     public Round currentRound;
     public int antePrice = 1;
     public int currentPot = 0;
@@ -61,8 +65,15 @@ public class PokerGameManager : MonoBehaviour
         SetCurrentPot(0);
         ResetChips();
         moveHistory.text = "New game";
-        anteButton.GetComponentInChildren<TextMeshProUGUI>().text = "Ante $" + antePrice;
-        anteButton.SetActive(true);
+        if (MoneyManager.Instance.GetCurrentMoney() < antePrice)
+        {
+            notEnoughMoneyText.SetActive(true);
+        }
+        else
+        {
+            anteButton.GetComponentInChildren<TextMeshProUGUI>().text = "Ante $" + antePrice;
+            anteButton.SetActive(true);
+        }
     }
     void AddChipToPot(bool isPlayer, int chipAmount)
     {

@@ -152,7 +152,7 @@ public static class HandManager
         if (numThrees > 0 && numPairs > 0 && threeVal != null && pairVal != null) {
             hand.handText = "Full House:\n" + threeVal.valueName + "s full of " + pairVal.valueName + "s";
             hand.handCards = winningCards;
-            hand.score = 7000 + (threeVal.value * 10) + pairVal.value;
+            hand.score = 7000 + (threeVal.value * 14) + pairVal.value;
             return;
         }
         
