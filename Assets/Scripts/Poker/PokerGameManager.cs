@@ -48,6 +48,10 @@ public class PokerGameManager : MonoBehaviour
     void Awake()
     {
         cardManager = GetComponent<CardManager>();
+    }
+
+    void Start()
+    {
         Initialize();
     }
 
@@ -71,6 +75,7 @@ public class PokerGameManager : MonoBehaviour
         }
         else
         {
+            notEnoughMoneyText.SetActive(false);
             anteButton.GetComponentInChildren<TextMeshProUGUI>().text = "Ante $" + antePrice;
             anteButton.SetActive(true);
         }
