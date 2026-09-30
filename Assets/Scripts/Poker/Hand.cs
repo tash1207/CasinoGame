@@ -12,7 +12,17 @@ public class Hand
 
     public Hand()
     {
-        handCards = new List<Card>();
-        kickers = new List<Card>();
+        handCards = new List<Card>(10);
+        kickers = new List<Card>(10);
+    }
+
+    public void Clear()
+    {
+        handText = "";
+        handCards.Clear();
+        score = 0;
+        kickers.Clear();
+        numInARow = 0;
+        numSameSuit = 0;
     }
 }

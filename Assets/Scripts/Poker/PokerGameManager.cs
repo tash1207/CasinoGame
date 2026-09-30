@@ -41,6 +41,9 @@ public class PokerGameManager : MonoBehaviour
     public int antePrice = 1;
     public int currentPot = 0;
 
+    private Hand dealerHand;
+    private Hand tableHand;
+
     private CardManager cardManager;
     private int currentBetValue = 0;
     private int totalBetValue = 0;
@@ -52,6 +55,8 @@ public class PokerGameManager : MonoBehaviour
 
     void Start()
     {
+        dealerHand = new Hand();
+        tableHand = new Hand();
         Initialize();
     }
 
@@ -68,6 +73,8 @@ public class PokerGameManager : MonoBehaviour
         totalBetValue = 0;
         SetCurrentPot(0);
         ResetChips();
+        dealerHand.Clear();
+        tableHand.Clear();
         moveHistory.text = "New game";
         if (MoneyManager.Instance.GetCurrentMoney() < antePrice)
         {
@@ -85,6 +92,7 @@ public class PokerGameManager : MonoBehaviour
         Vector3 chipPosition = Vector3.zero;
         chipPosition.x += UnityEngine.Random.Range(0, 200);
         chipPosition.y += UnityEngine.Random.Range(0, 100);
+        // Usually show the higher value chips on top of the stack
         if (chipAmount > 1 && UnityEngine.Random.Range(0f, 1f) > 0.3) chipPosition.z = -1;
         if (isPlayer) chipPosition.y *= -1;
         GameObject chip =
@@ -103,6 +111,7 @@ public class PokerGameManager : MonoBehaviour
         moveHistory.text += "\nYou put $" + antePrice + " into the pot";
         cardManager.DealCards();
         moveHistory.text += "\nThe cards are dealt";
+        dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
         currentRound = Round.PreFlop;
         anteButton.SetActive(false);
         ToggleAvailableActions(true);
@@ -353,10 +362,9 @@ public class PokerGameManager : MonoBehaviour
     bool DealerHasGreatHand()
     {
         bool hasGreatHand = false;
-        Hand dealersHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
         if (currentRound == Round.PreFlop)
         {
-            if (dealersHand.score >= 2010)
+            if (dealerHand.score >= 2010)
             {
                 Debug.Log("Has pair of 10s or better");
                 hasGreatHand = true;
@@ -375,14 +383,12 @@ public class PokerGameManager : MonoBehaviour
         }
         else if (currentRound == Round.Flop)
         {
-            List<Card> emptyList = new List<Card>();
-            Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
-            if (dealersHand.score >= 4004 && dealersHand.score > tableHand.score)
+            if (dealerHand.score >= 4004 && dealerHand.score > tableHand.score)
             {
                 Debug.Log("Hit 3 of a kind, 4s or higher");
                 hasGreatHand = true;
             }
-            if (dealersHand.score >= 3120 && tableHand.score < 2013)
+            if (dealerHand.score >= 3120 && tableHand.score < 2013)
             {
                 Debug.Log("Has 2 pair with highest at least Qs");
                 hasGreatHand = true;
@@ -390,9 +396,7 @@ public class PokerGameManager : MonoBehaviour
         }
         else if (currentRound == Round.Turn || currentRound == Round.River)
         {
-            List<Card> emptyList = new List<Card>();
-            Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
-            if (dealersHand.score >= 5000 && dealersHand.score > tableHand.score)
+            if (dealerHand.score >= 5000 && dealerHand.score > tableHand.score)
             {
                 Debug.Log("Has straight or better");
                 hasGreatHand = true;
@@ -403,11 +407,10 @@ public class PokerGameManager : MonoBehaviour
 
     bool DealerHasGoodHand()
     {        
-        Hand dealersHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
         if (currentRound == Round.PreFlop)
         {
             bool hasGoodHand = false;
-            if (dealersHand.score >= 2005)
+            if (dealerHand.score >= 2005)
             {
                 Debug.Log("Has pair of 5s or better");
                 hasGoodHand = true;
@@ -446,15 +449,13 @@ public class PokerGameManager : MonoBehaviour
         }
         else // Cards on the table
         {
-            List<Card> emptyList = new List<Card>();
-            Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
             if (currentRound == Round.Flop)
             {
-                return dealersHand.score > 2006 && dealersHand.score > tableHand.score; // Has pair of 7s or better
+                return dealerHand.score > 2006 && dealerHand.score > tableHand.score; // Has pair of 7s or better
             }
             else
             {
-                return dealersHand.score > 2010 && dealersHand.score > tableHand.score; // Has pair of jacks or better
+                return dealerHand.score > 2010 && dealerHand.score > tableHand.score; // Has pair of jacks or better
             }
         }
     }
@@ -465,13 +466,9 @@ public class PokerGameManager : MonoBehaviour
         {
             return DealerHasGoodHand();
         }
-
-        List<Card> emptyList = new List<Card>();
-        Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
-        Hand dealersHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
         if (currentRound == Round.Flop)
         {
-            if (dealersHand.score > 2005)
+            if (dealerHand.score > 2005)
             {
                 Debug.Log("Has better than pair of 5s");
                 return true;
@@ -481,14 +478,14 @@ public class PokerGameManager : MonoBehaviour
                 Debug.Log("Has A, K or Q in hand");
                 return true;
             }
-            if (dealersHand.numSameSuit >= 4 ||
-                (dealersHand.numSameSuit >= 3 && tableHand.numSameSuit < 3))
+            if (dealerHand.numSameSuit >= 4 ||
+                (dealerHand.numSameSuit >= 3 && tableHand.numSameSuit < 3))
             {
                 Debug.Log("Has at least 3 suited cards not from table");
                 return true;
             }
-            if (dealersHand.numInARow >= 4 ||
-                (dealersHand.numInARow >= 3 && tableHand.numInARow < 3))
+            if (dealerHand.numInARow >= 4 ||
+                (dealerHand.numInARow >= 3 && tableHand.numInARow < 3))
             {
                 // TODO: Figure out straight gap logic like AK J10 (just needs Q)
                 Debug.Log("Has at least 3 in a row not from table");
@@ -500,13 +497,13 @@ public class PokerGameManager : MonoBehaviour
             if (tableHand.numSameSuit >= 3 &&
                 (cardManager.dealerCards[0].suit == tableHand.suit || 
                 cardManager.dealerCards[1].suit == tableHand.suit) &&
-                dealersHand.score > 2000 &&
-                dealersHand.score > tableHand.score)
+                dealerHand.score > 2000 &&
+                dealerHand.score > tableHand.score)
             {
                 Debug.Log("Dealer can compete with flush draw");
                 return true;
             }
-            if (tableHand.numSameSuit < 3 && dealersHand.score > tableHand.score)
+            if (tableHand.numSameSuit < 3 && dealerHand.score > tableHand.score)
             {
                 // TODO: Check for wet board and straight draws
                 Debug.Log("Dealer has better hand than table");
@@ -524,17 +521,14 @@ public class PokerGameManager : MonoBehaviour
         }
         else
         {
-            List<Card> emptyList = new List<Card>();
-            Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
-            Hand dealersHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
             if (currentRound == Round.Flop)
             {
-                if (dealersHand.numSameSuit >= 4 && tableHand.numSameSuit < 4)
+                if (dealerHand.numSameSuit >= 4 && tableHand.numSameSuit < 4)
                 {
                     Debug.Log("Has 4 suited cards not from table");
                     return true;
                 }
-                if (dealersHand.numInARow >= 4)
+                if (dealerHand.numInARow >= 4)
                 {
                     // TODO: Figure out straight gap logic like AK J10 (just needs Q)
                     Debug.Log("Has 4 in a row not from table");
@@ -549,10 +543,7 @@ public class PokerGameManager : MonoBehaviour
     {
         if (currentRound == Round.River)
         {
-            List<Card> emptyList = new List<Card>();
-            Hand tableHand = HandManager.GetHand(emptyList, cardManager.tableCards);
-            Hand dealersHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
-            return dealersHand.score == tableHand.score && tableHand.score < 9000;
+            return dealerHand.score == tableHand.score && tableHand.score < 9000;
             // TODO: Update when pot is small, bet is low, and we have a high card on a dry board
         }
         return false;
@@ -598,18 +589,24 @@ public class PokerGameManager : MonoBehaviour
                 moveHistory.text += "\nThe flop is shown";
                 cardManager.Flop();
                 currentRound = Round.Flop;
+                dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
+                tableHand = HandManager.GetHand(cardManager.tableCards);
                 CanAdvance(false);
                 break;
             case Round.Flop:
                 moveHistory.text += "\nThe turn is shown";
                 cardManager.Turn();
                 currentRound = Round.Turn;
+                dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
+                tableHand = HandManager.GetHand(cardManager.tableCards);
                 CanAdvance(false);
                 break;
             case Round.Turn:
                 moveHistory.text += "\nThe river is shown";
                 cardManager.River();
                 currentRound = Round.River;
+                dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
+                tableHand = HandManager.GetHand(cardManager.tableCards);
                 CanAdvance(false);
                 break;
             case Round.River:

@@ -6,10 +6,6 @@ public static class HandManager
 {
     public static Hand GetHand(List<Card> handCards, List<Card> tableCards)
     {
-        if (handCards.Count == 0)
-        {
-            Debug.Log("Checking table hand");
-        }
         List<Card> allCards = new List<Card>();
         allCards.AddRange(handCards);
         allCards.AddRange(tableCards);
@@ -22,6 +18,12 @@ public static class HandManager
         Debug.Log("Score: " + hand.score);
 
         return hand;
+    }
+
+    public static Hand GetHand(List<Card> cards)
+    {
+        List<Card> emptyList = new List<Card>();
+        return GetHand(emptyList, cards);
     }
 
     static void HandCheckStraightFlush(Hand hand, List<Card> handAndTableCards)
@@ -340,8 +342,8 @@ public static class HandManager
                     }
                     for (int j = 0; i < Math.Min(handAndTableCards.Count, 2); j++)
                     {
-                        hand.handCards.Add(handAndTableCards[i]);
-                        hand.kickers.Add(handAndTableCards[i]);
+                        hand.handCards.Add(handAndTableCards[j]);
+                        hand.kickers.Add(handAndTableCards[j]);
                     }
                     return;
                 }

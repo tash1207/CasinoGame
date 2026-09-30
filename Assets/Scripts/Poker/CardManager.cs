@@ -40,9 +40,9 @@ public class CardManager : MonoBehaviour
     void InitializeDeck()
     {
         allCards = new List<Card>();
-        handCards = new List<Card>();
-        tableCards = new List<Card>();
-        dealerCards = new List<Card>();
+        handCards = new List<Card>(10);
+        tableCards = new List<Card>(10);
+        dealerCards = new List<Card>(10);
 
         tableCardDisplays = new List<GameObject>();
 
