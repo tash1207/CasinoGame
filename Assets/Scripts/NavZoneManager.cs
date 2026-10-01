@@ -10,7 +10,8 @@ public class NavZoneManager : MonoBehaviour
         PokerTable,
         CasinoFacingRight,
         GuitarDetail,
-        PokerTableCanvas
+        PokerTableCanvas,
+        LeftPokerTable
     }
 
     [Header("Current State")]
