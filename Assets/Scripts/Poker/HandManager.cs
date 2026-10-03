@@ -73,21 +73,87 @@ public static class HandManager
     {
         if (CheckStraight(cards))
         {
-            hand.handCards = cards.GetRange(0, 5);
             if (HasRoyalCards(cards))
             {
+                hand.handCards = cards.GetRange(0, 5);
                 hand.handText = "Royal Flush of " + cards[0].GetSuitName();
                 hand.score = 10000;
             }
             else
             {
-                hand.handText = "Straight Flush of " + cards[0].GetSuitName();
-                int topCardValue = cards[0].value;
-                if (cards[0].value == 14 && cards[1].value == 5) // A2345 straight
+                int maxNumInARow = 1;
+                int numInARow = 1;
+                List<Card> winningCards = new List<Card>();
+                for (int i = 0; i < cards.Count; i++)
                 {
-                    topCardValue = 5;
+                    Card currentCard = cards[i];
+                    if (!winningCards.Contains(currentCard))
+                        winningCards.Add(currentCard);
+                    if (currentCard.value == 2 && cards[0].value == 14)
+                    {
+                        winningCards.Add(cards[0]);
+                        numInARow++;
+                        if (numInARow > maxNumInARow)
+                        {
+                            maxNumInARow = numInARow;
+                        }
+                        break;
+                    }
+                    if (i + 1 >= cards.Count)
+                    {
+                        break;
+                    }
+                    if (currentCard.value == cards[i + 1].value)
+                    {
+                        winningCards.Remove(currentCard);
+                        continue;
+                    }
+                    else if (currentCard.value == cards[i + 1].value + 1)
+                    {
+                        winningCards.Add(cards[i + 1]);
+                        numInARow++;
+                        if (numInARow > maxNumInARow)
+                        {
+                            maxNumInARow = numInARow;
+                        }
+                    }
+                    else
+                    {
+                        if (numInARow > maxNumInARow)
+                        {
+                            maxNumInARow = numInARow;
+                        }
+                        if (maxNumInARow >= 5)
+                        {
+                            hand.handText = "Straight Flush of " + cards[0].GetSuitName();
+                            hand.handCards = winningCards.GetRange(0, 5);
+                            int topCardValue = hand.handCards[0].value;
+                            if (hand.handCards[0].value == 14 && hand.handCards[1].value == 5) // A2345 straight
+                            {
+                                topCardValue = 5;
+                            }
+                            hand.score = 9000 + topCardValue;
+                            return;
+                        }
+                        numInARow = 1;
+                        winningCards.Clear();
+                    }
                 }
-                hand.score = 9000 + topCardValue;
+
+                hand.numInARow = maxNumInARow;
+
+                if (maxNumInARow >= 5)
+                {
+                    hand.handText = "Straight Flush of " + cards[0].GetSuitName();
+                    hand.handCards = winningCards.GetRange(0, 5);
+                    int topCardValue = hand.handCards[0].value;
+                    if (hand.handCards[0].value == 14 && hand.handCards[1].value == 5) // A2345 straight
+                    {
+                        topCardValue = 5;
+                    }
+                    hand.score = 9000 + topCardValue;
+                    return;
+                }
             }
         }
     }
@@ -340,7 +406,7 @@ public static class HandManager
                     {
                         handAndTableCards.Remove(card);
                     }
-                    for (int j = 0; i < Math.Min(handAndTableCards.Count, 2); j++)
+                    for (int j = 0; j < Math.Min(handAndTableCards.Count, 2); j++)
                     {
                         hand.handCards.Add(handAndTableCards[j]);
                         hand.kickers.Add(handAndTableCards[j]);

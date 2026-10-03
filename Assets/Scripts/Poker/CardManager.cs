@@ -17,20 +17,34 @@ public class CardManager : MonoBehaviour
     [SerializeField] MeshCardDisplay dealerCard1;
     [SerializeField] MeshCardDisplay dealerCard2;
 
+    [Header("Player Cards")]
+    [SerializeField] MeshCardDisplay player1Card1;
+    [SerializeField] MeshCardDisplay player1Card2;
+
+    [Header("EndGame Panels")]
     [SerializeField] GameObject gameOverCanvas;
     [SerializeField] TMP_Text showHandText;
     [SerializeField] TMP_Text showDealerHandText;
+    [SerializeField] TMP_Text showPlayer1HandText;
     [SerializeField] TMP_Text whoWonText;
 
     private List<Card> allCards;
     public List<Card> handCards { get; private set; }
     public List<Card> tableCards { get; private set; }
     public List<Card> dealerCards { get; private set; }
+    public List<Card> player1Cards { get; private set; }
 
     private Hand yourHand;
     private Hand dealersHand;
+    private Hand player1Hand;
+    public int numPlayers { get; private set; }
 
     private List<GameObject> tableCardDisplays;
+
+    void Awake()
+    {
+        numPlayers = player1Card1 == null ? 2 : 3;
+    }
 
     void OnEnable()
     {
@@ -43,6 +57,7 @@ public class CardManager : MonoBehaviour
         handCards = new List<Card>(10);
         tableCards = new List<Card>(10);
         dealerCards = new List<Card>(10);
+        player1Cards = new List<Card>(10);
 
         tableCardDisplays = new List<GameObject>();
 
@@ -108,6 +123,21 @@ public class CardManager : MonoBehaviour
 
         dealerCards.Add(randomCard4);
         dealerCard2.SetCard(randomCard4);
+
+        if (numPlayers == 3)
+        {
+            Card randomCard5 = GetRandomCard();
+            Card randomCard6 = GetRandomCard();
+
+            player1Card1.transform.parent.gameObject.SetActive(true);
+            player1Card2.transform.parent.gameObject.SetActive(true);
+
+            player1Cards.Add(randomCard5);
+            player1Card1.SetCard(randomCard5);
+
+            player1Cards.Add(randomCard6);
+            player1Card2.SetCard(randomCard6);
+        }
     }
 
     public void Flop()
@@ -138,11 +168,37 @@ public class CardManager : MonoBehaviour
         AddTableCard();
     }
 
-    public void ShowHand(int currentPot)
+    public void ShowHand(int currentPot, bool dealerFolded, bool player1Folded)
     {
         yourHand = HandManager.GetHand(handCards, tableCards);
         dealersHand = HandManager.GetHand(dealerCards, tableCards);
+        player1Hand = HandManager.GetHand(player1Cards, tableCards);
 
+        if (numPlayers == 3)
+        {
+            player1Hand = HandManager.GetHand(player1Cards, tableCards);
+            showPlayer1HandText.text = "Joe's Hand:\n" + player1Hand.handText;
+
+            player1Card1.transform.rotation = Quaternion.Euler(180f, 0f, 90f);
+            player1Card2.transform.rotation = Quaternion.Euler(180f, 0f, 90f);
+
+            WinLogicWithPlayer1(currentPot, dealerFolded, player1Folded);
+        }
+        else
+        {
+            WinLogic(currentPot);
+        }
+
+        showHandText.text = "Your Hand:\n" + yourHand.handText;
+        showDealerHandText.text = "Dealer's Hand:\n" + dealersHand.handText;
+        gameOverCanvas.SetActive(true);
+
+        dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+        dealerCard2.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+    }
+
+    void WinLogic(int currentPot)
+    {
         if (yourHand.score > dealersHand.score)
         {
             YouWin(currentPot);
@@ -155,7 +211,7 @@ public class CardManager : MonoBehaviour
         {
             if (yourHand.kickers.Count == 0)
             {
-                Chop(currentPot);
+                Chop(currentPot, "Dealer");
             }
             for (int i = 0; i < yourHand.kickers.Count; i++)
             {
@@ -171,17 +227,175 @@ public class CardManager : MonoBehaviour
                 }
                 else if (i == yourHand.kickers.Count - 1)
                 {
-                    Chop(currentPot);
+                    Chop(currentPot, "Dealer");
                 }
             }
         }
+    }
 
-        showHandText.text = "Your Hand:\n" + yourHand.handText;
-        showDealerHandText.text = "Dealer's Hand:\n" + dealersHand.handText;
-        gameOverCanvas.SetActive(true);
-
-        dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-        dealerCard2.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+    void WinLogicWithPlayer1(int currentPot, bool dealerFolded, bool player1Folded)
+    {
+        if (player1Folded)
+        {
+            WinLogic(currentPot);
+            return;
+        }
+        else if (dealerFolded)
+        {
+            if (yourHand.score > player1Hand.score)
+            {
+                YouWin(currentPot);
+            }
+            else if (player1Hand.score > yourHand.score)
+            {
+                Player1Wins(currentPot);
+            }
+            else // yourHand.score == dealersHand.score
+            {
+                if (yourHand.kickers.Count == 0)
+                {
+                    Chop(currentPot, "Joe");
+                }
+                for (int i = 0; i < yourHand.kickers.Count; i++)
+                {
+                    if (yourHand.kickers[i].value > player1Hand.kickers[i].value)
+                    {
+                        YouWin(currentPot);
+                        break;
+                    }
+                    else if (player1Hand.kickers[i].value > yourHand.kickers[i].value)
+                    {
+                        Player1Wins(currentPot);
+                        break;
+                    }
+                    else if (i == yourHand.kickers.Count - 1)
+                    {
+                        Chop(currentPot, "Joe");
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (yourHand.score > dealersHand.score && yourHand.score > player1Hand.score)
+            {
+                YouWin(currentPot);
+            }
+            else if (player1Hand.score > yourHand.score && player1Hand.score > dealersHand.score)
+            {
+                Player1Wins(currentPot);
+            }
+            else if (dealersHand.score > yourHand.score && dealersHand.score > player1Hand.score)
+            {
+                DealerWins(currentPot);
+            }
+            else if (yourHand.score == dealersHand.score && yourHand.score == player1Hand.score)
+            {
+                // TODO: Fix 3 way chop logic
+                if (yourHand.kickers.Count == 0)
+                {
+                    Chop3Ways(currentPot, "Dealer", "Joe");
+                }
+                for (int i = 0; i < yourHand.kickers.Count; i++)
+                {
+                    if (yourHand.kickers[i].value > dealersHand.kickers[i].value &&
+                        yourHand.kickers[i].value > player1Hand.kickers[i].value)
+                    {
+                        YouWin(currentPot);
+                        break;
+                    }
+                    else if (dealersHand.kickers[i].value > yourHand.kickers[i].value &&
+                            dealersHand.kickers[i].value > player1Hand.kickers[i].value)
+                    {
+                        DealerWins(currentPot);
+                        break;
+                    }
+                    else if (player1Hand.kickers[i].value > yourHand.kickers[i].value &&
+                            player1Hand.kickers[i].value > dealersHand.kickers[i].value)
+                    {
+                        Player1Wins(currentPot);
+                        break;
+                    }
+                    else if (i == yourHand.kickers.Count - 1)
+                    {
+                        Chop3Ways(currentPot, "Dealer", "Joe");
+                    }
+                }
+            }
+            else if (yourHand.score == dealersHand.score)
+            {
+                if (yourHand.kickers.Count == 0)
+                {
+                    Chop(currentPot, "Dealer");
+                }
+                for (int i = 0; i < yourHand.kickers.Count; i++)
+                {
+                    if (yourHand.kickers[i].value > dealersHand.kickers[i].value)
+                    {
+                        YouWin(currentPot);
+                        break;
+                    }
+                    else if (dealersHand.kickers[i].value > yourHand.kickers[i].value)
+                    {
+                        DealerWins(currentPot);
+                        break;
+                    }
+                    else if (i == yourHand.kickers.Count - 1)
+                    {
+                        Chop(currentPot, "Joe");
+                    }
+                }
+            }
+            else if (player1Hand.score == dealersHand.score)
+            {
+                if (player1Hand.kickers.Count == 0)
+                {
+                    Chop(currentPot, "Dealer");
+                }
+                for (int i = 0; i < player1Hand.kickers.Count; i++)
+                {
+                    if (player1Hand.kickers[i].value > dealersHand.kickers[i].value)
+                    {
+                        Player1Wins(currentPot);
+                        break;
+                    }
+                    else if (dealersHand.kickers[i].value > player1Hand.kickers[i].value)
+                    {
+                        DealerWins(currentPot);
+                        break;
+                    }
+                    else if (i == player1Hand.kickers.Count - 1)
+                    {
+                        // TODO: Fix Chop logic to add who is chopping pot.
+                        Chop(currentPot, "Joe");
+                    }
+                }
+            }
+            else if (yourHand.score == player1Hand.score)
+            {
+                if (yourHand.kickers.Count == 0)
+                {
+                    Chop(currentPot, "Joe");
+                }
+                for (int i = 0; i < yourHand.kickers.Count; i++)
+                {
+                    if (yourHand.kickers[i].value > player1Hand.kickers[i].value)
+                    {
+                        YouWin(currentPot);
+                        break;
+                    }
+                    else if (player1Hand.kickers[i].value > yourHand.kickers[i].value)
+                    {
+                        Player1Wins(currentPot);
+                        break;
+                    }
+                    else if (i == yourHand.kickers.Count - 1)
+                    {
+                        Chop(currentPot, "Joe");
+                    }
+                }
+            }
+        }
     }
 
     void YouWin(int currentPot)
@@ -197,13 +411,29 @@ public class CardManager : MonoBehaviour
         whoWonText.text = "DEALER WINS $" + currentPot;
     }
 
-    void Chop(int currentPot)
+    void Player1Wins(int currentPot)
+    {
+        HighlightPlayer1Cards();
+        whoWonText.text = "JOE WINS $" + currentPot;
+    }
+
+    void Chop(int currentPot, string otherWinner)
     {
         HighlightYourCards();
         whoWonText.text = "CHOP $" + currentPot;
-        whoWonText.text += "\nDealer gets $" + (currentPot + 1)/2;
-        whoWonText.text += "\nYou get $" + (currentPot - 1)/2;
-        MoneyManager.Instance.AddMoney((currentPot - 1)/2);
+        whoWonText.text += "\n" + otherWinner + " gets $" + Mathf.CeilToInt(currentPot/2f);
+        whoWonText.text += "\nYou get $" + Mathf.FloorToInt(currentPot/2f);
+        MoneyManager.Instance.AddMoney(Mathf.FloorToInt(currentPot/2f));
+    }
+
+    void Chop3Ways(int currentPot, string otherWinner1, string otherWinner2)
+    {
+        HighlightYourCards();
+        whoWonText.text = "CHOP $" + currentPot;
+        whoWonText.text += "\n" + otherWinner1 + " gets $" + Mathf.CeilToInt(currentPot/3f);
+        whoWonText.text += "\n" + otherWinner2 + " gets $" + Mathf.FloorToInt(currentPot/3f);
+        whoWonText.text += "\nYou get $" + Mathf.FloorToInt(currentPot/3f);
+        MoneyManager.Instance.AddMoney(Mathf.FloorToInt(currentPot/3f));
     }
 
     public void DealerFold(int currentPot)
@@ -213,6 +443,14 @@ public class CardManager : MonoBehaviour
         showDealerHandText.text = "Dealer folded";
         MoneyManager.Instance.AddMoney(currentPot);
         gameOverCanvas.SetActive(true);
+
+        if (numPlayers == 3)
+        {
+            showPlayer1HandText.text = "Joe folded";
+
+            player1Card1.transform.rotation = Quaternion.Euler(180f, 0f, 90f);
+            player1Card2.transform.rotation = Quaternion.Euler(180f, 0f, 90f);
+        }
 
         dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
         dealerCard2.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
@@ -224,6 +462,14 @@ public class CardManager : MonoBehaviour
         showHandText.text = "You folded";
         showDealerHandText.text = "Dealer wins by default";
         gameOverCanvas.SetActive(true);
+
+        if (numPlayers == 3)
+        {
+            showPlayer1HandText.text = "Joe folded";
+
+            player1Card1.transform.rotation = Quaternion.Euler(180f, 0f, 90f);
+            player1Card2.transform.rotation = Quaternion.Euler(180f, 0f, 90f);
+        }
 
         dealerCard1.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
         dealerCard2.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
@@ -277,6 +523,30 @@ public class CardManager : MonoBehaviour
         }
     }
 
+    public void HighlightPlayer1Cards()
+    {
+        ResetHighlightedCards();
+        foreach (var tableCardDisplay in tableCardDisplays)
+        {
+            Card tableCard = tableCardDisplay.GetComponentInChildren<MeshCardDisplay>().GetCard();
+            if (player1Hand.handCards.Contains(tableCard))
+            {
+                Outline outline = tableCardDisplay.GetComponent<Outline>();
+                outline.enabled = true;
+                outline.effectColor = new Color(0f, 1f, 0f, 1f);
+            }
+        }
+
+        if (player1Hand.handCards.Contains(player1Card1.GetCard()))
+        {
+            player1Card1.gameObject.GetComponentInParent<Outline>().enabled = true;
+        }
+        if (player1Hand.handCards.Contains(player1Card2.GetCard()))
+        {
+            player1Card2.gameObject.GetComponentInParent<Outline>().enabled = true;
+        }
+    }
+
     void ResetHighlightedCards()
     {
         foreach (var tableCardDisplay in tableCardDisplays)
@@ -287,6 +557,12 @@ public class CardManager : MonoBehaviour
         handCard2.gameObject.GetComponentInParent<Outline>().enabled = false;
         dealerCard1.gameObject.GetComponentInParent<Outline>().enabled = false;
         dealerCard2.gameObject.GetComponentInParent<Outline>().enabled = false;
+
+        if (numPlayers == 3)
+        {
+            player1Card1.gameObject.GetComponentInParent<Outline>().enabled = false;
+            player1Card2.gameObject.GetComponentInParent<Outline>().enabled = false;
+        }
     }
 
     public void Reset()
@@ -310,6 +586,15 @@ public class CardManager : MonoBehaviour
 
         dealerCard1.transform.parent.gameObject.SetActive(false);
         dealerCard2.transform.parent.gameObject.SetActive(false);
+
+        if (numPlayers == 3)
+        {
+            player1Card1.transform.rotation = Quaternion.Euler(0f, 0f, 90f);
+            player1Card2.transform.rotation = Quaternion.Euler(0f, 0f, 90f);
+
+            player1Card1.transform.parent.gameObject.SetActive(false);
+            player1Card2.transform.parent.gameObject.SetActive(false);
+        }
 
         List<GameObject> cardsToDestroy = new List<GameObject>();
         foreach (Transform child in cardHolder.transform)

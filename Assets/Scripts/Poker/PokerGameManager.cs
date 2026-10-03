@@ -34,29 +34,40 @@ public class PokerGameManager : MonoBehaviour
     [SerializeField] GameObject chipHolder;
     [SerializeField] GameObject chip1Prefab;
     [SerializeField] GameObject chip5Prefab;
+    [SerializeField] GameObject chip10Prefab;
     [SerializeField] TMP_Text currentPotText;
 
     [Header("Game Info")]
+    [SerializeField] GameObject dealerFoldedBanner;
+    [SerializeField] GameObject player1FoldedBanner;
     public Round currentRound;
     public int antePrice = 1;
     public int currentPot = 0;
 
     private Hand dealerHand;
+    private Hand player1Hand;
     private Hand tableHand;
 
     private CardManager cardManager;
     private int currentBetValue = 0;
     private int totalBetValue = 0;
+    private int playerSetBet = 0; // 1 for Player1, 2 for you, 3 for dealer
+
+    private int numPlayers = 0;
+    private bool dealerFolded;
+    private bool player1Folded;
 
     void Awake()
     {
         cardManager = GetComponent<CardManager>();
     }
 
-    void Start()
+    void OnEnable()
     {
         dealerHand = new Hand();
+        player1Hand = new Hand();
         tableHand = new Hand();
+        numPlayers = cardManager.numPlayers;
         Initialize();
     }
 
@@ -71,14 +82,22 @@ public class PokerGameManager : MonoBehaviour
         currentRound = Round.PreDeal;
         currentBetValue = 0;
         totalBetValue = 0;
+        playerSetBet = 0;
         SetCurrentPot(0);
         ResetChips();
+
+        if (dealerFoldedBanner != null) dealerFoldedBanner.SetActive(false);
+        if (player1FoldedBanner != null) player1FoldedBanner?.SetActive(false);
+        dealerFolded = false;
+        player1Folded = numPlayers == 3 ? false : true;
         dealerHand.Clear();
+        player1Hand.Clear();
         tableHand.Clear();
         moveHistory.text = "New game";
-        if (MoneyManager.Instance.GetCurrentMoney() < antePrice)
+        if (MoneyManager.Instance.currentMoney < antePrice)
         {
             notEnoughMoneyText.SetActive(true);
+            anteButton.SetActive(false);
         }
         else
         {
@@ -87,137 +106,17 @@ public class PokerGameManager : MonoBehaviour
             anteButton.SetActive(true);
         }
     }
-    void AddChipToPot(bool isPlayer, int chipAmount)
-    {
-        Vector3 chipPosition = Vector3.zero;
-        chipPosition.x += UnityEngine.Random.Range(0, 200);
-        chipPosition.y += UnityEngine.Random.Range(0, 100);
-        // Usually show the higher value chips on top of the stack
-        if (chipAmount > 1 && UnityEngine.Random.Range(0f, 1f) > 0.3) chipPosition.z = -1;
-        if (isPlayer) chipPosition.y *= -1;
-        GameObject chip =
-            Instantiate(chipAmount == 1 ? chip1Prefab : chip5Prefab, Vector3.zero, chip1Prefab.transform.rotation, chipHolder.transform);
-        chip.transform.localPosition = chipPosition;
-    }
 
-    public void Ante()
+    void AddChipsToPot(bool isPlayer, int amount)
     {
-        SetCurrentPot(currentPot + antePrice);
-        MoneyManager.Instance.LoseMoney(antePrice);
-        for (int i = 0; i < antePrice; i++)
+        for (int i = 0; i < amount; i++)
         {
-            AddChipToPot(true, 1);
-        }
-        moveHistory.text += "\nYou put $" + antePrice + " into the pot";
-        cardManager.DealCards();
-        moveHistory.text += "\nThe cards are dealt";
-        dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
-        currentRound = Round.PreFlop;
-        anteButton.SetActive(false);
-        ToggleAvailableActions(true);
-    }
-
-    public void Check(bool isPlayer)
-    {
-        if (isPlayer)
-        {
-            moveHistory.text += "\nYou check";
-            if (DealerHasGreatHand())
+            if (amount - i >= 10)
             {
-                Debug.Log("Dealer bets high for great hand");
-                Bet(false, currentPot > 25 ? 10 : (currentPot > 10 ? 6 : 3));
+                AddChipToPot(isPlayer, 10);
+                i += 9;
             }
-            else if (DealerHasGoodHand() || DealerShouldBet())
-            {
-                Debug.Log("Dealer should bet");
-                if (UnityEngine.Random.Range(0f, 1f) > 0.2)
-                {
-                    Bet(false, currentPot > 20 ? 5 : (currentPot > 9 ? 4 : 2));
-                }
-                else
-                {
-                    Bet(false, currentPot > 10 ? 5 : 2);
-                }
-            }
-            else if (UnityEngine.Random.Range(0f, 1f) > 0.85)
-            {
-                Debug.Log("Dealer randomly decided to bet");
-                if (UnityEngine.Random.Range(0f, 1f) > 0.1)
-                {
-                    Bet(false, 1);
-                }
-                else
-                {
-                    Bet(false, 2);
-                }
-            }
-            else
-            {
-                // Dealer checks as well
-                Check(false);
-            }
-        }
-        else
-        {
-            moveHistory.text += "\nDealer checks";
-            CanAdvance(true);
-        }
-    }
-
-    public void Call(bool isPlayer)
-    {
-        SetCurrentPot(currentPot + currentBetValue);
-        for (int i = 0; i < currentBetValue; i++)
-        {
-            AddChipToPot(isPlayer, 1);
-        }
-        if (isPlayer)
-        {
-            moveHistory.text += "\nYou call $" + currentBetValue;
-            MoneyManager.Instance.LoseMoney(currentBetValue);
-        }
-        else
-        {
-            moveHistory.text += "\nDealer calls $" + currentBetValue;
-        }
-        currentBetValue = 0;
-        totalBetValue = 0;
-        CanAdvance(true);
-    }
-
-    public void Fold(bool isPlayer)
-    {
-        if (isPlayer)
-        {
-            moveHistory.text += "\nYou fold";
-            cardManager.PlayerFold(currentPot);
-        }
-        else
-        {
-            moveHistory.text += "\nDealer folds";
-            cardManager.DealerFold(currentPot);
-        }
-        EndGame();
-    }
-
-    public void Bet1()
-    {
-        Bet(true, getBetButton1Amount());
-    }
-
-    public void Bet2()
-    {
-        Bet(true, getBetButton2Amount());
-    }
-
-    void Bet(bool isPlayer, int betValue)
-    {
-        totalBetValue = betValue;
-        currentBetValue = betValue;
-        SetCurrentPot(currentPot + betValue);
-        for (int i = 0; i < betValue; i++)
-        {
-            if (betValue - i >= 5)
+            else if (amount - i >= 5)
             {
                 AddChipToPot(isPlayer, 5);
                 i += 4;
@@ -227,62 +126,388 @@ public class PokerGameManager : MonoBehaviour
                 AddChipToPot(isPlayer, 1);
             }
         }
-        if (isPlayer)
+    }
+
+    void AddChipToPot(bool isPlayer, int chipAmount)
+    {
+        Vector3 chipPosition = Vector3.zero;
+        chipPosition.x += UnityEngine.Random.Range(0, 200);
+        chipPosition.y += UnityEngine.Random.Range(0, 100);
+        // Usually show the higher value chips on top of the stack
+        if (chipAmount > 1 && UnityEngine.Random.Range(0f, 1f) > 0.3) chipPosition.z = -1;
+        if (isPlayer) chipPosition.y *= -1;
+        GameObject chip =
+            Instantiate(chipAmount == 1 ? chip1Prefab : (chipAmount == 5 ? chip5Prefab : chip10Prefab), Vector3.zero, chip1Prefab.transform.rotation, chipHolder.transform);
+        chip.transform.localPosition = chipPosition;
+    }
+
+    public void Ante()
+    {
+        // If there's another player have them ante first
+        if (numPlayers == 3)
         {
-            moveHistory.text += "\nYou bet $" + betValue;
-            MoneyManager.Instance.LoseMoney(currentBetValue);
-            if (DealerHasGreatHand() && UnityEngine.Random.Range(0f, 1f) > 0.1)
+            SetCurrentPot(currentPot + antePrice);
+            AddChipsToPot(false, antePrice);
+            moveHistory.text += "\nJoe put $" + antePrice + " into the pot";
+        }
+        SetCurrentPot(currentPot + antePrice);
+        MoneyManager.Instance.LoseMoney(antePrice);
+        AddChipsToPot(true, antePrice);
+        moveHistory.text += "\nYou put $" + antePrice + " into the pot";
+        cardManager.DealCards();
+        moveHistory.text += "\nThe cards are dealt";
+        dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
+        if (numPlayers == 3)
+        {
+            player1Hand = HandManager.GetHand(cardManager.player1Cards, cardManager.tableCards);
+        }
+        
+        currentRound = Round.PreFlop;
+        anteButton.SetActive(false);
+        
+        // Player 1 acts first
+        Player1MoveFirst();
+        ToggleAvailableActions(true);
+    }
+
+    void Player1MoveFirst()
+    {
+        if (numPlayers != 3 || player1Folded)
+        {
+            return;
+        }
+
+        if (Player1HasGreatHand())
+        {
+            Debug.Log("Player1 bets high for great hand");
+            BetNPC(false, getBetButton2Amount());
+        }
+        else if (Player1HasGoodHand() || Player1ShouldBet())
+        {
+            Debug.Log("Player1 should bet");
+            BetNPC(false, getBetButton1Amount());
+        }
+        else if (UnityEngine.Random.Range(0f, 1f) > 0.9)
+        {
+            Debug.Log("Player 1 randomly decided to bet");
+            if (UnityEngine.Random.Range(0f, 1f) > 0.9)
             {
-                Debug.Log("Dealer raises");
-                // Dealer raise
-                if (currentBetValue <= 2)
-                {
-                    Raise(false, currentBetValue + 1);
-                }
-                else
-                {
-                    Raise(false, currentBetValue);
-                }
-                CanAdvance(false);
-            }
-            else if (DealerHasGoodHand() || DealerHasChance())
-            {
-                Debug.Log("Dealer should call");
-                // Dealer call
-                Call(false);
-                CanAdvance(true);
-            }
-            else if (DealerShouldFold())
-            {
-                Debug.Log("Dealer should fold");
-                Fold(false);
+                BetNPC(false, getBetButton2Amount());
             }
             else
             {
-                if (currentBetValue < 3 && UnityEngine.Random.Range(0f, 1f) > 0.5)
-                {
-                    Debug.Log("Dealer randomly decided to call low bet");
-                    // Dealer call
-                    Call(false);
-                    CanAdvance(true);
-                }
-                else if (currentBetValue >= 3 && UnityEngine.Random.Range(0f, 1f) > 0.85)
-                {
-                    Debug.Log("Dealer randomly decided to call high bet");
-                    // Dealer call
-                    Call(false);
-                    CanAdvance(true);
-                }
-                else
-                {
-                    Debug.Log("Dealer randomly decided to fold");
-                    Fold(false);
-                }
+                BetNPC(false, getBetButton1Amount());
             }
         }
         else
         {
+            // Player 1 checks as well
+            CheckNPC(false);
+        }
+
+        CanAdvance(false);
+    }
+
+    void CheckNPC(bool isDealer)
+    {
+        if (isDealer)
+        {
+            moveHistory.text += "\nDealer checks";
+            CanAdvance(true);
+        }
+        else
+        {
+            moveHistory.text += "\nJoe checks";
+        }
+    }
+
+    public void Check()
+    {
+        moveHistory.text += "\nYou check";
+        DealerMoveAfterCheck();
+    }
+
+    void DealerMoveAfterCheck()
+    {
+        if (dealerFolded) {
+            CanAdvance(true);
+            return;
+        }
+
+        if (DealerHasGreatHand())
+        {
+            Debug.Log("Dealer bets high for great hand");
+            BetNPC(true, getBetButton2Amount());
+        }
+        else if (DealerHasGoodHand() || DealerShouldBet())
+        {
+            Debug.Log("Dealer should bet");
+            if (UnityEngine.Random.Range(0f, 1f) > 0.2)
+            {
+                BetNPC(true, getBetButton1Amount());
+            }
+            else
+            {
+                BetNPC(true, currentPot > 10 ? 5 : 2);
+            }
+        }
+        else if (UnityEngine.Random.Range(0f, 1f) > 0.85)
+        {
+            Debug.Log("Dealer randomly decided to bet");
+            if (UnityEngine.Random.Range(0f, 1f) > 0.1)
+            {
+                BetNPC(true, getBetButton1Amount());
+            }
+            else
+            {
+                BetNPC(true, getBetButton2Amount());
+            }
+        }
+        else
+        {
+            // Dealer checks as well
+            CheckNPC(true);
+        }
+    }
+
+    void CallNPC(bool isDealer)
+    {
+        SetCurrentPot(currentPot + currentBetValue);
+        AddChipsToPot(false, currentBetValue);
+
+        if (isDealer)
+        {
+            moveHistory.text += "\nDealer calls $" + currentBetValue;
+        }
+        else
+        {
+            moveHistory.text += "\nJoe calls $" + currentBetValue;
+        }
+    }
+
+    public void Call()
+    {
+        SetCurrentPot(currentPot + currentBetValue);
+        AddChipsToPot(true, currentBetValue);
+
+        moveHistory.text += "\nYou call $" + currentBetValue;
+        MoneyManager.Instance.LoseMoney(currentBetValue);
+
+        if (playerSetBet == 3 || // Dealer set bet so you are last to act
+            playerSetBet == 1 && dealerFolded) // Player1 set bet and dealer folded, you are last to act
+        {
+            LastToActAfterBet();
+        }
+        else // Player 1 set bet so dealer must act
+        {
+            DealerMoveAfterBet();
+        }
+    }
+
+    void LastToActAfterBet()
+    {
+        currentBetValue = 0;
+        totalBetValue = 0;
+        CanAdvance(true);
+    }
+
+    public void Fold()
+    {
+        moveHistory.text += "\nYou fold";
+        cardManager.PlayerFold(currentPot);
+        // TODO: Play out rest of game with Dealer and Player1
+        EndGame();
+    }
+
+    void FoldNPC(bool isDealer)
+    {
+        if (isDealer)
+        {
+            moveHistory.text += "\nDealer folds";
+            dealerFolded = true;
+            dealerFoldedBanner.SetActive(true);
+        }
+        else
+        {
+            moveHistory.text += "\nJoe folds";
+            player1Folded = true;
+            player1FoldedBanner.SetActive(true);
+        }
+
+        if (dealerFolded && player1Folded)
+        {
+            cardManager.DealerFold(currentPot);
+            EndGame();
+        }
+    }
+
+    public void Bet1()
+    {
+        Bet(getBetButton1Amount());
+    }
+
+    public void Bet2()
+    {
+        Bet(getBetButton2Amount());
+    }
+
+    void BetNPC(bool isDealer, int betValue)
+    {
+        totalBetValue = betValue;
+        currentBetValue = betValue;
+        SetCurrentPot(currentPot + betValue);
+        AddChipsToPot(false, betValue);
+
+        if (isDealer)
+        {
+            playerSetBet = 3;
             moveHistory.text += "\nDealer bet $" + betValue;
+            Player1MoveAfterBet();
+        }
+        else
+        {
+            playerSetBet = 1;
+            moveHistory.text += "\nJoe bet $" + betValue;
+        }
+        CanAdvance(false);
+    }
+
+    void Bet(int betValue)
+    {
+        totalBetValue = betValue;
+        currentBetValue = betValue;
+        SetCurrentPot(currentPot + betValue);
+        AddChipsToPot(true, betValue);
+
+        playerSetBet = 2;
+        moveHistory.text += "\nYou bet $" + betValue;
+        MoneyManager.Instance.LoseMoney(currentBetValue);
+        DealerMoveAfterBet();
+    }
+
+    void DealerMoveAfterBet()
+    {
+        if (dealerFolded) {
+            Player1MoveAfterBet();
+            return;
+        }
+
+        if (DealerHasGreatHand() && UnityEngine.Random.Range(0f, 1f) > 0.1)
+        {
+            Debug.Log("Dealer raises");
+            // Dealer raise
+            if (currentBetValue <= 2)
+            {
+                Raise(false, currentBetValue + 1);
+            }
+            else
+            {
+                Raise(false, currentBetValue);
+            }
+            if (!player1Folded) Player1MoveAfterBet();
+            else CanAdvance(false);
+            return;
+        }
+        else if (DealerHasGoodHand() || DealerHasChance())
+        {
+            Debug.Log("Dealer should call");
+            // Dealer call
+            CallNPC(true);
+        }
+        else if (DealerShouldFold())
+        {
+            Debug.Log("Dealer should fold");
+            FoldNPC(true);
+        }
+        else
+        {
+            if (currentBetValue < 3 && UnityEngine.Random.Range(0f, 1f) > 0.5)
+            {
+                Debug.Log("Dealer randomly decided to call low bet");
+                // Dealer call
+                CallNPC(true);
+            }
+            else if (currentBetValue >= 3 && UnityEngine.Random.Range(0f, 1f) > 0.85)
+            {
+                Debug.Log("Dealer randomly decided to call high bet");
+                // Dealer call
+                CallNPC(true);
+            }
+            else
+            {
+                Debug.Log("Dealer randomly decided to fold");
+                FoldNPC(true);
+            }
+        }
+
+        if (dealerFolded && player1Folded) return;
+
+        if (playerSetBet == 1 || // Player1 set bet so dealer is last to act
+            playerSetBet == 2 && player1Folded) // You set bet and Player1 folded, dealer is last to act
+        {
+            LastToActAfterBet();
+        }
+        else
+        {
+            Player1MoveAfterBet();
+        }
+    }
+
+    void Player1MoveAfterBet()
+    {
+        if (numPlayers != 3 || player1Folded)
+        {
+            return;
+        }
+        // if (Player1HasGreatHand() && UnityEngine.Random.Range(0f, 1f) > 0.1)
+        // {
+        //     Debug.Log("Player1 raises");
+        //     // Player1 raise
+        //     Raise(false, currentBetValue);
+        //     CanAdvance(false);
+        // }
+        if (Player1HasGreatHand() || Player1HasGoodHand() || Player1HasChance())
+        {
+            Debug.Log("Player1 should call");
+            // Player1 call
+            CallNPC(false);
+        }
+        else if (Player1ShouldFold())
+        {
+            Debug.Log("Player1 should fold");
+            FoldNPC(false);
+        }
+        else
+        {
+            if (currentBetValue < 3 && UnityEngine.Random.Range(0f, 1f) > 0.5)
+            {
+                Debug.Log("Player1 randomly decided to call low bet");
+                // Player1 call
+                CallNPC(false);
+                //CanAdvance(true);
+            }
+            else if (currentBetValue >= 3 && UnityEngine.Random.Range(0f, 1f) > 0.85)
+            {
+                Debug.Log("Player1 randomly decided to call high bet");
+                // Player1 call
+                CallNPC(false);
+                //CanAdvance(true);
+            }
+            else
+            {
+                Debug.Log("Player1 randomly decided to fold");
+                FoldNPC(false);
+            }
+        }
+
+        if (dealerFolded && player1Folded) return;
+
+        if (playerSetBet == 2) // If you set bet, Player 1 is last to call.
+        {
+            LastToActAfterBet();
+        }
+        else
+        {
             CanAdvance(false);
         }
     }
@@ -296,21 +521,10 @@ public class PokerGameManager : MonoBehaviour
     void Raise(bool isPlayer, int betValue)
     {
         SetCurrentPot(currentPot + currentBetValue + betValue);
-        // TODO: Change to a while loop
-        for (int i = 0; i < currentBetValue + betValue; i++)
-        {
-            if (currentBetValue + betValue - i >= 5)
-            {
-                AddChipToPot(isPlayer, 5);
-                i += 4;
-            }
-            else
-            {
-                AddChipToPot(isPlayer, 1);
-            }
-        }
+        AddChipsToPot(isPlayer, currentBetValue + betValue);
         if (isPlayer)
         {
+            playerSetBet = 2;
             moveHistory.text += "\nYou raised to $" + (totalBetValue + betValue);
             MoneyManager.Instance.LoseMoney(currentBetValue + betValue);
             currentBetValue = betValue;
@@ -320,13 +534,12 @@ public class PokerGameManager : MonoBehaviour
             {
                 Debug.Log("Dealer should call");
                 // Dealer call
-                Call(false);
-                CanAdvance(true);
+                CallNPC(true);
             }
             else if (DealerShouldFold())
             {
                 Debug.Log("Dealer should fold");
-                Fold(false);
+                FoldNPC(true);
             }
             else
             {
@@ -334,25 +547,29 @@ public class PokerGameManager : MonoBehaviour
                 {
                     Debug.Log("Dealer has chance and decided to call low raise");
                     // Dealer call
-                    Call(false);
-                    CanAdvance(true);
+                    CallNPC(true);
                 }
                 else if (currentBetValue > 4 && DealerHasChance() && UnityEngine.Random.Range(0f, 1f) > 0.4)
                 {
                     Debug.Log("Dealer has chance and decided to call high raise");
                     // Dealer call
-                    Call(false);
-                    CanAdvance(true);
+                    CallNPC(true);
                 }
                 else
                 {
                     Debug.Log("Dealer randomly decided to fold");
-                    Fold(false);
+                    FoldNPC(true);
                 }
             }
+
+            if (dealerFolded && player1Folded) return;
+
+            if (!player1Folded) Player1MoveAfterBet();
+            else CanAdvance(true);
         }
         else
         {
+            playerSetBet = 3;
             moveHistory.text += "\nDealer raised to $" + (totalBetValue + betValue);
             currentBetValue = betValue;
             totalBetValue += currentBetValue;
@@ -361,21 +578,31 @@ public class PokerGameManager : MonoBehaviour
 
     bool DealerHasGreatHand()
     {
+        return NPCHasGreatHand(dealerHand, cardManager.dealerCards[0], cardManager.dealerCards[1]);
+    }
+
+    bool Player1HasGreatHand()
+    {
+        return NPCHasGreatHand(player1Hand, cardManager.player1Cards[0], cardManager.player1Cards[1]);
+    }
+
+    bool NPCHasGreatHand(Hand npcHand, Card card0, Card card1)
+    {
         bool hasGreatHand = false;
         if (currentRound == Round.PreFlop)
         {
-            if (dealerHand.score >= 2010)
+            if (npcHand.score >= 2010)
             {
                 Debug.Log("Has pair of 10s or better");
                 hasGreatHand = true;
             }
-            if (cardManager.dealerCards[0].suit == cardManager.dealerCards[1].suit &&
-                cardManager.dealerCards[0].value > 10 && cardManager.dealerCards[1].value >= 10)
+            if (card0.suit == card1.suit &&
+                card0.value > 10 && card1.value >= 10)
             {
                 Debug.Log("Has suited face cards");
                 hasGreatHand = true;
             }
-            if (cardManager.dealerCards[0].value >= 13 && cardManager.dealerCards[1].value >= 13)
+            if (card0.value >= 13 && card1.value >= 13)
             {
                 Debug.Log("Has A, K");
                 hasGreatHand = true;
@@ -383,12 +610,12 @@ public class PokerGameManager : MonoBehaviour
         }
         else if (currentRound == Round.Flop)
         {
-            if (dealerHand.score >= 4004 && dealerHand.score > tableHand.score)
+            if (npcHand.score >= 4004 && npcHand.score > tableHand.score)
             {
                 Debug.Log("Hit 3 of a kind, 4s or higher");
                 hasGreatHand = true;
             }
-            if (dealerHand.score >= 3120 && tableHand.score < 2013)
+            if (npcHand.score >= 3120 && tableHand.score < 2013)
             {
                 Debug.Log("Has 2 pair with highest at least Qs");
                 hasGreatHand = true;
@@ -396,7 +623,7 @@ public class PokerGameManager : MonoBehaviour
         }
         else if (currentRound == Round.Turn || currentRound == Round.River)
         {
-            if (dealerHand.score >= 5000 && dealerHand.score > tableHand.score)
+            if (npcHand.score >= 5000 && npcHand.score > tableHand.score)
             {
                 Debug.Log("Has straight or better");
                 hasGreatHand = true;
@@ -406,41 +633,51 @@ public class PokerGameManager : MonoBehaviour
     }
 
     bool DealerHasGoodHand()
+    {
+        return NPCHasGoodHand(dealerHand, cardManager.dealerCards[0], cardManager.dealerCards[1]);
+    }
+
+    bool Player1HasGoodHand()
+    {
+        return NPCHasGoodHand(player1Hand, cardManager.player1Cards[0], cardManager.player1Cards[1]);
+    }
+
+    bool NPCHasGoodHand(Hand npcHand, Card card0, Card card1)
     {        
         if (currentRound == Round.PreFlop)
         {
             bool hasGoodHand = false;
-            if (dealerHand.score >= 2005)
+            if (npcHand.score >= 2005)
             {
                 Debug.Log("Has pair of 5s or better");
                 hasGoodHand = true;
             }
-            if ((cardManager.dealerCards[0].value >= 12 && cardManager.dealerCards[1].value >= 9) || 
-                (cardManager.dealerCards[1].value >= 12 && cardManager.dealerCards[0].value >= 9))
+            if ((card0.value >= 12 && card1.value >= 9) || 
+                (card1.value >= 12 && card0.value >= 9))
             {
                 Debug.Log("Has A, K or Q in hand with other card at least 9");
                 hasGoodHand = true;
             }
-            if (cardManager.dealerCards[0].suit == cardManager.dealerCards[1].suit &&
-                Math.Abs(cardManager.dealerCards[0].value - cardManager.dealerCards[1].value) == 1)
+            if (card0.suit == card1.suit &&
+                Math.Abs(card0.value - card1.value) == 1)
             {
                 Debug.Log("Has suited connectors");
                 hasGoodHand = true;
             }
-            if (cardManager.dealerCards[0].suit == cardManager.dealerCards[1].suit &&
-                cardManager.dealerCards[0].value >= 7 && cardManager.dealerCards[1].value >= 7)
+            if (card0.suit == card1.suit &&
+                card0.value >= 7 && card1.value >= 7)
             {
                 Debug.Log("Has suited cards, at least 7");
                 hasGoodHand = true;
             }
-            if (cardManager.dealerCards[0].suit == cardManager.dealerCards[1].suit &&
-                (cardManager.dealerCards[0].value == 14 || cardManager.dealerCards[1].value == 14))
+            if (card0.suit == card1.suit &&
+                (card0.value == 14 || card1.value == 14))
             {
                 Debug.Log("Has suited cards, with an Ace");
                 hasGoodHand = true;
             }
-            if (Math.Abs(cardManager.dealerCards[0].value - cardManager.dealerCards[1].value) == 1 &&
-                (cardManager.dealerCards[0].value >= 8 || cardManager.dealerCards[1].value >= 8))
+            if (Math.Abs(card0.value - card1.value) == 1 &&
+                (card0.value >= 8 || card1.value >= 8))
             {
                 Debug.Log("Has 2 in a row");
                 hasGoodHand = true;
@@ -451,41 +688,51 @@ public class PokerGameManager : MonoBehaviour
         {
             if (currentRound == Round.Flop)
             {
-                return dealerHand.score > 2006 && dealerHand.score > tableHand.score; // Has pair of 7s or better
+                return npcHand.score > 2006 && npcHand.score > tableHand.score; // Has pair of 7s or better
             }
             else
             {
-                return dealerHand.score > 2010 && dealerHand.score > tableHand.score; // Has pair of jacks or better
+                return npcHand.score > 2010 && npcHand.score > tableHand.score; // Has pair of jacks or better
             }
         }
     }
 
     bool DealerHasChance()
     {
+        return NPCHasChance(dealerHand, cardManager.dealerCards[0], cardManager.dealerCards[1]);
+    }
+
+    bool Player1HasChance()
+    {
+        return NPCHasChance(player1Hand, cardManager.player1Cards[0], cardManager.player1Cards[1]);
+    }
+
+    bool NPCHasChance(Hand npcHand, Card card0, Card card1)
+    {
         if (currentRound == Round.PreFlop)
         {
-            return DealerHasGoodHand();
+            return NPCHasGoodHand(npcHand, card0, card1);
         }
         if (currentRound == Round.Flop)
         {
-            if (dealerHand.score > 2005)
+            if (npcHand.score > 2005)
             {
                 Debug.Log("Has better than pair of 5s");
                 return true;
             }
-            if (cardManager.dealerCards[0].value >= 12 || cardManager.dealerCards[1].value >= 12)
+            if (card0.value >= 12 || card1.value >= 12)
             {
                 Debug.Log("Has A, K or Q in hand");
                 return true;
             }
-            if (dealerHand.numSameSuit >= 4 ||
-                (dealerHand.numSameSuit >= 3 && tableHand.numSameSuit < 3))
+            if (npcHand.numSameSuit >= 4 ||
+                (npcHand.numSameSuit >= 3 && tableHand.numSameSuit < 3))
             {
                 Debug.Log("Has at least 3 suited cards not from table");
                 return true;
             }
-            if (dealerHand.numInARow >= 4 ||
-                (dealerHand.numInARow >= 3 && tableHand.numInARow < 3))
+            if (npcHand.numInARow >= 4 ||
+                (npcHand.numInARow >= 3 && tableHand.numInARow < 3))
             {
                 // TODO: Figure out straight gap logic like AK J10 (just needs Q)
                 Debug.Log("Has at least 3 in a row not from table");
@@ -495,18 +742,17 @@ public class PokerGameManager : MonoBehaviour
         else if (currentRound == Round.Turn)
         {
             if (tableHand.numSameSuit >= 3 &&
-                (cardManager.dealerCards[0].suit == tableHand.suit || 
-                cardManager.dealerCards[1].suit == tableHand.suit) &&
-                dealerHand.score > 2000 &&
-                dealerHand.score > tableHand.score)
+                (card0.suit == tableHand.suit || card1.suit == tableHand.suit) &&
+                npcHand.score > 2000 &&
+                npcHand.score > tableHand.score)
             {
-                Debug.Log("Dealer can compete with flush draw");
+                Debug.Log("NPC can compete with flush draw");
                 return true;
             }
-            if (tableHand.numSameSuit < 3 && dealerHand.score > tableHand.score)
+            if (tableHand.numSameSuit < 3 && npcHand.score > tableHand.score)
             {
                 // TODO: Check for wet board and straight draws
-                Debug.Log("Dealer has better hand than table");
+                Debug.Log("NPC has better hand than table");
                 return true;
             }
         }
@@ -514,6 +760,16 @@ public class PokerGameManager : MonoBehaviour
     }
 
     bool DealerShouldBet()
+    {
+        return NPCShouldBet(dealerHand, cardManager.dealerCards[0], cardManager.dealerCards[1]);
+    }
+
+    bool Player1ShouldBet()
+    {
+        return NPCShouldBet(player1Hand, cardManager.player1Cards[0], cardManager.player1Cards[1]);
+    }
+
+    bool NPCShouldBet(Hand npcHand, Card card0, Card card1)
     {
         if (currentRound == Round.PreFlop)
         {
@@ -523,12 +779,12 @@ public class PokerGameManager : MonoBehaviour
         {
             if (currentRound == Round.Flop)
             {
-                if (dealerHand.numSameSuit >= 4 && tableHand.numSameSuit < 4)
+                if (npcHand.numSameSuit >= 4 && tableHand.numSameSuit < 4)
                 {
                     Debug.Log("Has 4 suited cards not from table");
                     return true;
                 }
-                if (dealerHand.numInARow >= 4)
+                if (npcHand.numInARow >= 4)
                 {
                     // TODO: Figure out straight gap logic like AK J10 (just needs Q)
                     Debug.Log("Has 4 in a row not from table");
@@ -541,9 +797,29 @@ public class PokerGameManager : MonoBehaviour
 
     bool DealerShouldFold()
     {
+        return NPCShouldFold(dealerHand, cardManager.dealerCards[0], cardManager.dealerCards[1]);
+    }
+
+    bool Player1ShouldFold()
+    {
+        return NPCShouldFold(player1Hand, cardManager.player1Cards[0], cardManager.player1Cards[1]);
+    }
+
+    bool NPCShouldFold(Hand npcHand, Card card0, Card card1)
+    {
+        if (currentRound == Round.PreFlop)
+        {
+            if (card0.suit != card1.suit &&
+                card0.value < 10 && card1.value < 10 &&
+                Math.Abs(card0.value - card1.value) > 1)
+            {
+                Debug.Log("Has unsuited unconnected low cards");
+                return true;
+            }
+        }
         if (currentRound == Round.River)
         {
-            return dealerHand.score == tableHand.score && tableHand.score < 9000;
+            return npcHand.score == tableHand.score && tableHand.score < 9000;
             // TODO: Update when pot is small, bet is low, and we have a high card on a dry board
         }
         return false;
@@ -578,6 +854,7 @@ public class PokerGameManager : MonoBehaviour
     public void AdvanceRound()
     {
         currentBetValue = 0;
+        playerSetBet = 0;
         moveHistory.text += "\nCurrent pot: $" + currentPot;
         switch (currentRound)
         {
@@ -591,6 +868,7 @@ public class PokerGameManager : MonoBehaviour
                 currentRound = Round.Flop;
                 dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
                 tableHand = HandManager.GetHand(cardManager.tableCards);
+                Player1MoveFirst();
                 CanAdvance(false);
                 break;
             case Round.Flop:
@@ -599,6 +877,7 @@ public class PokerGameManager : MonoBehaviour
                 currentRound = Round.Turn;
                 dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
                 tableHand = HandManager.GetHand(cardManager.tableCards);
+                Player1MoveFirst();
                 CanAdvance(false);
                 break;
             case Round.Turn:
@@ -607,11 +886,12 @@ public class PokerGameManager : MonoBehaviour
                 currentRound = Round.River;
                 dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
                 tableHand = HandManager.GetHand(cardManager.tableCards);
+                Player1MoveFirst();
                 CanAdvance(false);
                 break;
             case Round.River:
                 moveHistory.text += "\nShow cards";
-                cardManager.ShowHand(currentPot);
+                cardManager.ShowHand(currentPot, dealerFolded, player1Folded);
                 currentRound = Round.Show;
                 CanAdvance(false);
                 break;
@@ -662,6 +942,14 @@ public class PokerGameManager : MonoBehaviour
 
     int getBetButton1Amount()
     {
+        if (currentPot > 30)
+        {
+            return 10;
+        }
+        if (currentPot > 15)
+        {
+            return 5;
+        }
         if (currentPot > 12)
         {
             return 4;
@@ -675,6 +963,14 @@ public class PokerGameManager : MonoBehaviour
 
     int getBetButton2Amount()
     {
+        if (currentPot > 30)
+        {
+            return 20;
+        }
+        if (currentPot > 15)
+        {
+            return 10;
+        }
         if (currentPot > 12)
         {
             return 8;
