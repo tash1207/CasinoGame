@@ -421,13 +421,13 @@ public class PokerGameManager : MonoBehaviour
         }
         else
         {
-            if (currentBetValue < 3 && UnityEngine.Random.Range(0f, 1f) > 0.5)
+            if (currentBetValue <= getBetButton1Amount() && UnityEngine.Random.Range(0f, 1f) > 0.5)
             {
                 Debug.Log("Dealer randomly decided to call low bet");
                 // Dealer call
                 CallNPC(true);
             }
-            else if (currentBetValue >= 3 && UnityEngine.Random.Range(0f, 1f) > 0.85)
+            else if (currentBetValue > getBetButton1Amount() && UnityEngine.Random.Range(0f, 1f) > 0.85)
             {
                 Debug.Log("Dealer randomly decided to call high bet");
                 // Dealer call
@@ -459,13 +459,7 @@ public class PokerGameManager : MonoBehaviour
         {
             return;
         }
-        // if (Player1HasGreatHand() && UnityEngine.Random.Range(0f, 1f) > 0.1)
-        // {
-        //     Debug.Log("Player1 raises");
-        //     // Player1 raise
-        //     Raise(false, currentBetValue);
-        //     CanAdvance(false);
-        // }
+
         if (Player1HasGreatHand() || Player1HasGoodHand() || Player1HasChance())
         {
             Debug.Log("Player1 should call");
@@ -479,19 +473,17 @@ public class PokerGameManager : MonoBehaviour
         }
         else
         {
-            if (currentBetValue < 3 && UnityEngine.Random.Range(0f, 1f) > 0.5)
+            if (currentBetValue <= getBetButton1Amount() && UnityEngine.Random.Range(0f, 1f) > 0.45)
             {
                 Debug.Log("Player1 randomly decided to call low bet");
                 // Player1 call
                 CallNPC(false);
-                //CanAdvance(true);
             }
-            else if (currentBetValue >= 3 && UnityEngine.Random.Range(0f, 1f) > 0.85)
+            else if (currentBetValue > getBetButton1Amount() && UnityEngine.Random.Range(0f, 1f) > 0.75)
             {
                 Debug.Log("Player1 randomly decided to call high bet");
                 // Player1 call
                 CallNPC(false);
-                //CanAdvance(true);
             }
             else
             {

@@ -592,6 +592,9 @@ public class CardManager : MonoBehaviour
             player1Card1.transform.rotation = Quaternion.Euler(0f, 0f, 90f);
             player1Card2.transform.rotation = Quaternion.Euler(0f, 0f, 90f);
 
+            player1Card1.gameObject.GetComponentInParent<Outline>().enabled = false;
+            player1Card2.gameObject.GetComponentInParent<Outline>().enabled = false;
+
             player1Card1.transform.parent.gameObject.SetActive(false);
             player1Card2.transform.parent.gameObject.SetActive(false);
         }
