@@ -858,8 +858,7 @@ public class PokerGameManager : MonoBehaviour
                 moveHistory.text += "\nThe flop is shown";
                 cardManager.Flop();
                 currentRound = Round.Flop;
-                dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
-                tableHand = HandManager.GetHand(cardManager.tableCards);
+                GetHands();
                 Player1MoveFirst();
                 CanAdvance(false);
                 break;
@@ -867,8 +866,7 @@ public class PokerGameManager : MonoBehaviour
                 moveHistory.text += "\nThe turn is shown";
                 cardManager.Turn();
                 currentRound = Round.Turn;
-                dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
-                tableHand = HandManager.GetHand(cardManager.tableCards);
+                GetHands();
                 Player1MoveFirst();
                 CanAdvance(false);
                 break;
@@ -876,8 +874,7 @@ public class PokerGameManager : MonoBehaviour
                 moveHistory.text += "\nThe river is shown";
                 cardManager.River();
                 currentRound = Round.River;
-                dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
-                tableHand = HandManager.GetHand(cardManager.tableCards);
+                GetHands();
                 Player1MoveFirst();
                 CanAdvance(false);
                 break;
@@ -889,6 +886,16 @@ public class PokerGameManager : MonoBehaviour
                 break;
             default:
                 return;
+        }
+    }
+
+    void GetHands()
+    {
+        dealerHand = HandManager.GetHand(cardManager.dealerCards, cardManager.tableCards);
+        tableHand = HandManager.GetHand(cardManager.tableCards);
+        if (numPlayers == 3)
+        {
+            player1Hand = HandManager.GetHand(cardManager.player1Cards, cardManager.tableCards);
         }
     }
 
