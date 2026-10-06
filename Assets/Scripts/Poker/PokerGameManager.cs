@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PokerGameManager : MonoBehaviour
 {
@@ -38,8 +40,8 @@ public class PokerGameManager : MonoBehaviour
     [SerializeField] TMP_Text currentPotText;
 
     [Header("Game Info")]
-    [SerializeField] GameObject dealerFoldedBanner;
-    [SerializeField] GameObject player1FoldedBanner;
+    [SerializeField] GameObject dealerStatusBanner;
+    [SerializeField] GameObject player1StatusBanner;
     public Round currentRound;
     public int antePrice = 1;
     public int currentPot = 0;
@@ -56,6 +58,7 @@ public class PokerGameManager : MonoBehaviour
     private int numPlayers = 0;
     private bool dealerFolded;
     private bool player1Folded;
+    private float statusTimeWait = 1.5f;
 
     void Awake()
     {
@@ -86,8 +89,8 @@ public class PokerGameManager : MonoBehaviour
         SetCurrentPot(0);
         ResetChips();
 
-        if (dealerFoldedBanner != null) dealerFoldedBanner.SetActive(false);
-        if (player1FoldedBanner != null) player1FoldedBanner?.SetActive(false);
+        if (dealerStatusBanner != null) dealerStatusBanner.SetActive(false);
+        if (player1StatusBanner != null) player1StatusBanner?.SetActive(false);
         dealerFolded = false;
         player1Folded = numPlayers == 3 ? false : true;
         dealerHand.Clear();
@@ -166,16 +169,60 @@ public class PokerGameManager : MonoBehaviour
         anteButton.SetActive(false);
         
         // Player 1 acts first
-        Player1MoveFirst();
+        StartCoroutine(Player1MoveFirst());
         ToggleAvailableActions(true);
     }
 
-    void Player1MoveFirst()
+    IEnumerator WaitForDealerMove()
+    {
+        DisableAllActionButtons();
+        dealerStatusBanner.GetComponentInChildren<TextMeshProUGUI>().text = "Dealer's Move...";
+        dealerStatusBanner.SetActive(true);
+        yield return new WaitForSeconds(statusTimeWait);
+
+        EnableAllActionButtons();
+        dealerStatusBanner.SetActive(false);
+    }
+
+    IEnumerator WaitForPlayer1Move()
+    {
+        DisableAllActionButtons();
+        player1StatusBanner.GetComponentInChildren<TextMeshProUGUI>().text = "Joe's Move...";
+        player1StatusBanner.SetActive(true);
+        yield return new WaitForSeconds(statusTimeWait);
+
+        EnableAllActionButtons();
+        player1StatusBanner.SetActive(false);
+    }
+
+    void DisableAllActionButtons()
+    {
+        checkButton.GetComponent<Button>().interactable = false;
+        callButton.GetComponent<Button>().interactable = false;
+        betButton1.GetComponent<Button>().interactable = false;
+        betButton2.GetComponent<Button>().interactable = false;
+        foldButton.GetComponent<Button>().interactable = false;
+        raiseButton.GetComponent<Button>().interactable = false;
+    }
+
+    void EnableAllActionButtons()
+    {
+        checkButton.GetComponent<Button>().interactable = true;
+        callButton.GetComponent<Button>().interactable = true;
+        betButton1.GetComponent<Button>().interactable = true;
+        betButton2.GetComponent<Button>().interactable = true;
+        foldButton.GetComponent<Button>().interactable = true;
+        raiseButton.GetComponent<Button>().interactable = true;
+    }
+
+    IEnumerator Player1MoveFirst()
     {
         if (numPlayers != 3 || player1Folded)
         {
-            return;
+            yield break;
         }
+
+        yield return StartCoroutine(WaitForPlayer1Move());
 
         if (Player1HasGreatHand())
         {
@@ -212,11 +259,13 @@ public class PokerGameManager : MonoBehaviour
     {
         if (isDealer)
         {
+            StartCoroutine(ShowDealerStatus("Check"));
             moveHistory.text += "\nDealer checks";
             CanAdvance(true);
         }
         else
         {
+            StartCoroutine(ShowPlayer1Status("Check"));
             moveHistory.text += "\nJoe checks";
         }
     }
@@ -224,15 +273,17 @@ public class PokerGameManager : MonoBehaviour
     public void Check()
     {
         moveHistory.text += "\nYou check";
-        DealerMoveAfterCheck();
+        StartCoroutine(DealerMoveAfterCheck());
     }
 
-    void DealerMoveAfterCheck()
+    IEnumerator DealerMoveAfterCheck()
     {
         if (dealerFolded) {
             CanAdvance(true);
-            return;
+            yield break;
         }
+
+        yield return StartCoroutine(WaitForDealerMove());
 
         if (DealerHasGreatHand())
         {
@@ -277,12 +328,30 @@ public class PokerGameManager : MonoBehaviour
 
         if (isDealer)
         {
+            StartCoroutine(ShowDealerStatus("Call"));
             moveHistory.text += "\nDealer calls $" + currentBetValue;
         }
         else
         {
+            StartCoroutine(ShowPlayer1Status("Call"));
             moveHistory.text += "\nJoe calls $" + currentBetValue;
         }
+    }
+
+    IEnumerator ShowDealerStatus(string status)
+    {
+        dealerStatusBanner.GetComponentInChildren<TextMeshProUGUI>().text = status;
+        dealerStatusBanner.SetActive(true);
+        yield return new WaitForSeconds(statusTimeWait);
+        dealerStatusBanner.SetActive(false);
+    }
+
+    IEnumerator ShowPlayer1Status(string status)
+    {
+        player1StatusBanner.GetComponentInChildren<TextMeshProUGUI>().text = status;
+        player1StatusBanner.SetActive(true);
+        yield return new WaitForSeconds(statusTimeWait);
+        player1StatusBanner.SetActive(false);
     }
 
     public void Call()
@@ -300,7 +369,7 @@ public class PokerGameManager : MonoBehaviour
         }
         else // Player 1 set bet so dealer must act
         {
-            DealerMoveAfterBet();
+            StartCoroutine(DealerMoveAfterBet());
         }
     }
 
@@ -326,13 +395,15 @@ public class PokerGameManager : MonoBehaviour
         {
             moveHistory.text += "\nDealer folds";
             dealerFolded = true;
-            dealerFoldedBanner.SetActive(true);
+            dealerStatusBanner.GetComponentInChildren<TextMeshProUGUI>().text = "Folded";
+            dealerStatusBanner.SetActive(true);
         }
         else
         {
             moveHistory.text += "\nJoe folds";
             player1Folded = true;
-            player1FoldedBanner.SetActive(true);
+            player1StatusBanner.GetComponentInChildren<TextMeshProUGUI>().text = "Folded";
+            player1StatusBanner.SetActive(true);
         }
 
         if (dealerFolded && player1Folded)
@@ -361,12 +432,14 @@ public class PokerGameManager : MonoBehaviour
 
         if (isDealer)
         {
+            StartCoroutine(ShowDealerStatus("Bet $" + betValue));
             playerSetBet = 3;
             moveHistory.text += "\nDealer bet $" + betValue;
-            Player1MoveAfterBet();
+            StartCoroutine(Player1MoveAfterBet());
         }
         else
         {
+            StartCoroutine(ShowPlayer1Status("Bet $" + betValue));
             playerSetBet = 1;
             moveHistory.text += "\nJoe bet $" + betValue;
         }
@@ -383,15 +456,17 @@ public class PokerGameManager : MonoBehaviour
         playerSetBet = 2;
         moveHistory.text += "\nYou bet $" + betValue;
         MoneyManager.Instance.LoseMoney(currentBetValue);
-        DealerMoveAfterBet();
+        StartCoroutine(DealerMoveAfterBet());
     }
 
-    void DealerMoveAfterBet()
+    IEnumerator DealerMoveAfterBet()
     {
         if (dealerFolded) {
-            Player1MoveAfterBet();
-            return;
+            StartCoroutine(Player1MoveAfterBet());
+            yield break;
         }
+
+        yield return StartCoroutine(WaitForDealerMove());
 
         if (DealerHasGreatHand() && UnityEngine.Random.Range(0f, 1f) > 0.1)
         {
@@ -405,9 +480,10 @@ public class PokerGameManager : MonoBehaviour
             {
                 Raise(false, currentBetValue);
             }
-            if (!player1Folded) Player1MoveAfterBet();
+            if (!player1Folded) StartCoroutine(Player1MoveAfterBet());
             else CanAdvance(false);
-            return;
+            yield break;
+            
         }
         else if (DealerHasGoodHand() || DealerHasChance())
         {
@@ -422,13 +498,13 @@ public class PokerGameManager : MonoBehaviour
         }
         else
         {
-            if (currentBetValue <= getBetButton1Amount() && UnityEngine.Random.Range(0f, 1f) > 0.5)
+            if (currentBetValue <= getBetButton1Amount(currentPot - currentBetValue) && UnityEngine.Random.Range(0f, 1f) > 0.5)
             {
                 Debug.Log("Dealer randomly decided to call low bet");
                 // Dealer call
                 CallNPC(true);
             }
-            else if (currentBetValue > getBetButton1Amount() && UnityEngine.Random.Range(0f, 1f) > 0.85)
+            else if (currentBetValue > getBetButton1Amount(currentPot - currentBetValue) && UnityEngine.Random.Range(0f, 1f) > 0.85)
             {
                 Debug.Log("Dealer randomly decided to call high bet");
                 // Dealer call
@@ -441,7 +517,7 @@ public class PokerGameManager : MonoBehaviour
             }
         }
 
-        if (dealerFolded && player1Folded) return;
+        if (dealerFolded && player1Folded) yield break;
 
         if (playerSetBet == 1 || // Player1 set bet so dealer is last to act
             playerSetBet == 2 && player1Folded) // You set bet and Player1 folded, dealer is last to act
@@ -450,16 +526,18 @@ public class PokerGameManager : MonoBehaviour
         }
         else
         {
-            Player1MoveAfterBet();
+            StartCoroutine(Player1MoveAfterBet());
         }
     }
 
-    void Player1MoveAfterBet()
+    IEnumerator Player1MoveAfterBet()
     {
         if (numPlayers != 3 || player1Folded)
         {
-            return;
+            yield break;
         }
+
+        yield return StartCoroutine(WaitForPlayer1Move());
 
         if (Player1HasGreatHand() || Player1HasGoodHand() || Player1HasChance())
         {
@@ -474,13 +552,13 @@ public class PokerGameManager : MonoBehaviour
         }
         else
         {
-            if (currentBetValue <= getBetButton1Amount() && UnityEngine.Random.Range(0f, 1f) > 0.45)
+            if (currentBetValue <= getBetButton1Amount(currentPot - currentBetValue) && UnityEngine.Random.Range(0f, 1f) > 0.45)
             {
                 Debug.Log("Player1 randomly decided to call low bet");
                 // Player1 call
                 CallNPC(false);
             }
-            else if (currentBetValue > getBetButton1Amount() && UnityEngine.Random.Range(0f, 1f) > 0.75)
+            else if (currentBetValue > getBetButton1Amount(currentPot - currentBetValue) && UnityEngine.Random.Range(0f, 1f) > 0.75)
             {
                 Debug.Log("Player1 randomly decided to call high bet");
                 // Player1 call
@@ -493,7 +571,7 @@ public class PokerGameManager : MonoBehaviour
             }
         }
 
-        if (dealerFolded && player1Folded) return;
+        if (dealerFolded && player1Folded) yield break;
 
         if (playerSetBet == 2) // If you set bet, Player 1 is last to call.
         {
@@ -522,51 +600,63 @@ public class PokerGameManager : MonoBehaviour
             MoneyManager.Instance.LoseMoney(currentBetValue + betValue);
             currentBetValue = betValue;
             totalBetValue += currentBetValue;
-            // Dealer move
-            if (DealerHasGreatHand() || DealerHasGoodHand())
-            {
-                Debug.Log("Dealer should call");
-                // Dealer call
-                CallNPC(true);
-            }
-            else if (DealerShouldFold())
-            {
-                Debug.Log("Dealer should fold");
-                FoldNPC(true);
-            }
-            else
-            {
-                if (currentBetValue <= 4 && DealerHasChance())
-                {
-                    Debug.Log("Dealer has chance and decided to call low raise");
-                    // Dealer call
-                    CallNPC(true);
-                }
-                else if (currentBetValue > 4 && DealerHasChance() && UnityEngine.Random.Range(0f, 1f) > 0.4)
-                {
-                    Debug.Log("Dealer has chance and decided to call high raise");
-                    // Dealer call
-                    CallNPC(true);
-                }
-                else
-                {
-                    Debug.Log("Dealer randomly decided to fold");
-                    FoldNPC(true);
-                }
-            }
-
-            if (dealerFolded && player1Folded) return;
-
-            if (!player1Folded) Player1MoveAfterBet();
-            else CanAdvance(true);
+            StartCoroutine(DealerMoveAfterRaise());
         }
         else
         {
+            StartCoroutine(ShowDealerStatus("Raise to $" + (totalBetValue + betValue)));
             playerSetBet = 3;
             moveHistory.text += "\nDealer raised to $" + (totalBetValue + betValue);
             currentBetValue = betValue;
             totalBetValue += currentBetValue;
         }
+    }
+
+    IEnumerator DealerMoveAfterRaise()
+    {
+        if (dealerFolded) {
+            StartCoroutine(Player1MoveAfterBet());
+            yield break;
+        }
+
+        yield return StartCoroutine(WaitForDealerMove());
+
+        if (DealerHasGreatHand() || DealerHasGoodHand())
+        {
+            Debug.Log("Dealer should call");
+            // Dealer call
+            CallNPC(true);
+        }
+        else if (DealerShouldFold())
+        {
+            Debug.Log("Dealer should fold");
+            FoldNPC(true);
+        }
+        else
+        {
+            if (currentBetValue <= 4 && DealerHasChance())
+            {
+                Debug.Log("Dealer has chance and decided to call low raise");
+                // Dealer call
+                CallNPC(true);
+            }
+            else if (currentBetValue > 4 && DealerHasChance() && UnityEngine.Random.Range(0f, 1f) > 0.4)
+            {
+                Debug.Log("Dealer has chance and decided to call high raise");
+                // Dealer call
+                CallNPC(true);
+            }
+            else
+            {
+                Debug.Log("Dealer randomly decided to fold");
+                FoldNPC(true);
+            }
+        }
+
+        if (dealerFolded && player1Folded) yield break;
+
+        if (!player1Folded) StartCoroutine(Player1MoveAfterBet());
+        else CanAdvance(true);
     }
 
     bool DealerHasGreatHand()
@@ -860,7 +950,7 @@ public class PokerGameManager : MonoBehaviour
                 cardManager.Flop();
                 currentRound = Round.Flop;
                 GetHands();
-                Player1MoveFirst();
+                StartCoroutine(Player1MoveFirst());
                 CanAdvance(false);
                 break;
             case Round.Flop:
@@ -868,7 +958,7 @@ public class PokerGameManager : MonoBehaviour
                 cardManager.Turn();
                 currentRound = Round.Turn;
                 GetHands();
-                Player1MoveFirst();
+                StartCoroutine(Player1MoveFirst());
                 CanAdvance(false);
                 break;
             case Round.Turn:
@@ -876,7 +966,7 @@ public class PokerGameManager : MonoBehaviour
                 cardManager.River();
                 currentRound = Round.River;
                 GetHands();
-                Player1MoveFirst();
+                StartCoroutine(Player1MoveFirst());
                 CanAdvance(false);
                 break;
             case Round.River:
@@ -940,46 +1030,56 @@ public class PokerGameManager : MonoBehaviour
         }
     }
 
-    int getBetButton1Amount()
+    int getBetButton1Amount(int pot)
     {
-        if (currentPot > 30)
+        if (pot > 30)
         {
             return 10;
         }
-        if (currentPot > 15)
+        if (pot > 15)
         {
             return 5;
         }
-        if (currentPot > 12)
+        if (pot > 12)
         {
             return 4;
         }
-        if (currentPot > 4)
+        if (pot > 4)
         {
             return 2;
         }
         return 1;
     }
 
-    int getBetButton2Amount()
+    int getBetButton1Amount()
     {
-        if (currentPot > 30)
+        return getBetButton1Amount(currentPot);
+    }
+
+    int getBetButton2Amount(int pot)
+    {
+        if (pot > 30)
         {
             return 20;
         }
-        if (currentPot > 15)
+        if (pot > 15)
         {
             return 10;
         }
-        if (currentPot > 12)
+        if (pot > 12)
         {
             return 8;
         }
-        if (currentPot > 4)
+        if (pot > 4)
         {
             return 5;
         }
         return 2;
+    }
+
+    int getBetButton2Amount()
+    {
+        return getBetButton2Amount(currentPot);
     }
 
     void EndGame()
