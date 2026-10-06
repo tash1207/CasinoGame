@@ -15360,6 +15360,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 72b7bd156a1fc4f93adfc1aa2e2b1685, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 87f8ad24afc7b4570954a8a45f9ab175, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -22628,7 +22632,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 9a795a22e85984ca1a20e37c551c4bf7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
