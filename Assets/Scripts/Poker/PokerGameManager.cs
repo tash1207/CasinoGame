@@ -314,7 +314,8 @@ public class PokerGameManager : MonoBehaviour
     public void Fold()
     {
         moveHistory.text += "\nYou fold";
-        cardManager.PlayerFold(currentPot);
+        if (dealerFolded) cardManager.PlayerFold(currentPot, "Joe");
+        else cardManager.PlayerFold(currentPot);
         // TODO: Play out rest of game with Dealer and Player1
         EndGame();
     }

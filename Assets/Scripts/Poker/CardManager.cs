@@ -44,6 +44,14 @@ public class CardManager : MonoBehaviour
     void Awake()
     {
         numPlayers = player1Card1 == null ? 2 : 3;
+
+        allCards = new List<Card>();
+        handCards = new List<Card>(10);
+        tableCards = new List<Card>(10);
+        dealerCards = new List<Card>(10);
+        player1Cards = new List<Card>(10);
+
+        tableCardDisplays = new List<GameObject>();
     }
 
     void OnEnable()
@@ -53,13 +61,13 @@ public class CardManager : MonoBehaviour
 
     void InitializeDeck()
     {
-        allCards = new List<Card>();
-        handCards = new List<Card>(10);
-        tableCards = new List<Card>(10);
-        dealerCards = new List<Card>(10);
-        player1Cards = new List<Card>(10);
+        allCards.Clear();
+        handCards.Clear();
+        tableCards.Clear();
+        dealerCards.Clear();
+        player1Cards.Clear();
 
-        tableCardDisplays = new List<GameObject>();
+        tableCardDisplays.Clear();
 
         for (int i = 2; i <= 14; i++)
         {
@@ -458,14 +466,32 @@ public class CardManager : MonoBehaviour
 
     public void PlayerFold(int currentPot)
     {
-        whoWonText.text = "DEALER WINS $" + currentPot;
-        showHandText.text = "You folded";
-        showDealerHandText.text = "Dealer wins by default";
+        PlayerFold(currentPot, "Dealer");
+    }
+
+    public void PlayerFold(int currentPot, string winner)
+    {
+        if (winner == "Dealer")
+        {
+            whoWonText.text = "DEALER WINS $" + currentPot;
+            showHandText.text = "You folded";
+            showDealerHandText.text = "Dealer wins by default";
+        }
         gameOverCanvas.SetActive(true);
 
         if (numPlayers == 3)
         {
-            showPlayer1HandText.text = "Joe folded";
+            if (winner == "Dealer")
+            {
+                showPlayer1HandText.text = "Joe folded";
+            }
+            else
+            {
+                whoWonText.text = winner.ToUpper() + " WINS $" + currentPot;
+                showHandText.text = "You folded";
+                showDealerHandText.text = "Dealer folded";
+                showPlayer1HandText.text = winner + " wins by default";
+            }
 
             player1Card1.transform.rotation = Quaternion.Euler(180f, 0f, 90f);
             player1Card2.transform.rotation = Quaternion.Euler(180f, 0f, 90f);
@@ -478,6 +504,8 @@ public class CardManager : MonoBehaviour
     public void HighlightYourCards()
     {
         ResetHighlightedCards();
+        if (tableCardDisplays.Count < 5) return;
+
         foreach (var tableCardDisplay in tableCardDisplays)
         {
             Card tableCard = tableCardDisplay.GetComponentInChildren<MeshCardDisplay>().GetCard();
@@ -502,6 +530,8 @@ public class CardManager : MonoBehaviour
     public void HighlightDealersCards()
     {
         ResetHighlightedCards();
+        if (tableCardDisplays.Count < 5) return;
+
         foreach (var tableCardDisplay in tableCardDisplays)
         {
             Card tableCard = tableCardDisplay.GetComponentInChildren<MeshCardDisplay>().GetCard();
@@ -526,6 +556,8 @@ public class CardManager : MonoBehaviour
     public void HighlightPlayer1Cards()
     {
         ResetHighlightedCards();
+        if (tableCardDisplays.Count < 5) return;
+
         foreach (var tableCardDisplay in tableCardDisplays)
         {
             Card tableCard = tableCardDisplay.GetComponentInChildren<MeshCardDisplay>().GetCard();
