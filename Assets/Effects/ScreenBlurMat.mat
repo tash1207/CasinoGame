@@ -91,7 +91,7 @@ Material:
     - _AlphaToMask: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
-    - _Blur: 0.06
+    - _Blur: 0.05
     - _BlurCycles: 2
     - _BlurMultiplier: 1
     - _BlurSamplesPerCycle: 2
