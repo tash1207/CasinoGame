@@ -350,12 +350,13 @@ public class CardManager : MonoBehaviour
                     }
                     else if (i == yourHand.kickers.Count - 1)
                     {
-                        Chop(currentPot, "Joe");
+                        Chop(currentPot, "Dealer");
                     }
                 }
             }
             else if (player1Hand.score == dealersHand.score)
             {
+                // TODO: Allow player to not get any money on a chop.
                 if (player1Hand.kickers.Count == 0)
                 {
                     Chop(currentPot, "Dealer");
@@ -374,7 +375,6 @@ public class CardManager : MonoBehaviour
                     }
                     else if (i == player1Hand.kickers.Count - 1)
                     {
-                        // TODO: Fix Chop logic to add who is chopping pot.
                         Chop(currentPot, "Joe");
                     }
                 }

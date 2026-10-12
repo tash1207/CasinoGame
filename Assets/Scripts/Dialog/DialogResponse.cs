@@ -22,8 +22,6 @@ public class DialogResponse
             if (!condition.Evaluate())
                 return false;
         }
-
         return true;
     }
-
 }

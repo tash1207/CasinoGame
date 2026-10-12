@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ce668189fa64d18aebb98604ec5cdf, type: 3}
+  m_Name: Joe1-Intro
+  m_EditorClassIdentifier: Assembly-CSharp::DialogConversation
+  conversationName: Joe
+  startingDialog:
+    speakerName: Joe
+    dialogText: Hi, I'm Joe and I'm winning a bunch of money at this table today!
+    responses:
+    - responseText: Can I borrow some money?
+      nextDialog:
+        speakerName: Joe
+        dialogText: Sure, here's a little something to get you started on the high
+          stakes table.
+        responses:
+        - responseText: Thank you!
+          nextDialog:
+            speakerName: 
+            dialogText: 
+            responses: []
+            endsConversation: 0
+            eventToTrigger: 
+          conditions: []
+          endsConversation: 1
+          eventToTrigger: 
+        endsConversation: 0
+        eventToTrigger: GiveMoney
+      conditions:
+      - conditionType: 2
+        conditionID: 
+        requiredValue: -1
+        invertCondition: 0
+      endsConversation: 0
+      eventToTrigger: 
+    - responseText: Nice to meet you Joe and congrats on the winnings!
+      nextDialog:
+        speakerName: Joe
+        dialogText: 
+        responses: []
+        endsConversation: 0
+        eventToTrigger: 
+      conditions: []
+      endsConversation: 1
+      eventToTrigger: 
+    endsConversation: 0
+    eventToTrigger: TalkToJoe
+  canRepeat: 0
+  repeatDialog:
+    speakerName: 
+    dialogText: 
+    responses: []
+    endsConversation: 0
+    eventToTrigger: 
+  conditions:
+  - conditionType: 3
+    conditionID: TALKED_TO_JOE
+    requiredValue: 0
+    invertCondition: 1

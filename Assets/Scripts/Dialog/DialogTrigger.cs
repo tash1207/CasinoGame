@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 public class DialogTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    [SerializeField] DialogConversation dialog;
+    [SerializeField] DialogConversation[] dialogs;
     [SerializeField] int distanceFromCameraToBeInteractable;
 
     Vector2 defaultCursorHotspot = new Vector2(14, 11);
@@ -28,7 +28,7 @@ public class DialogTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         if (!IsInteractable()) return;
         //Debug.Log(gameObject.name + " was clicked!");
 
-        DialogManager.Instance.StartConversation(dialog);
+        DialogManager.Instance.StartFirstValidConversation(dialogs);
     }
 
     bool IsInteractable()

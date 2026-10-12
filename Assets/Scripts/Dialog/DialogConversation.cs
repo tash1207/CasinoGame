@@ -13,6 +13,8 @@ public class DialogConversation : ScriptableObject
     public bool canRepeat = true;
     public DialogEntry repeatDialog;
 
+    public DialogCondition[] conditions;
+
     public DialogEntry GetStartingDialog(bool hasBeenCompleted)
     {
         if (hasBeenCompleted && !canRepeat && repeatDialog != null)
@@ -20,5 +22,18 @@ public class DialogConversation : ScriptableObject
             return repeatDialog;
         }
         return startingDialog;
+    }
+
+    public bool MeetsConditions()
+    {
+        if (conditions == null || conditions.Length == 0)
+            return true;
+
+        foreach (var condition in conditions)
+        {
+            if (!condition.Evaluate())
+                return false;
+        }
+        return true;
     }
 }

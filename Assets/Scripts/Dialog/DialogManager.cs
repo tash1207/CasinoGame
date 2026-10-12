@@ -21,6 +21,19 @@ public class DialogManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
+    public void StartFirstValidConversation(DialogConversation[] conversations)
+    {
+        if (conversations.Length < 1) return;
+        foreach (var conversation in conversations)
+        {
+            if (conversation.MeetsConditions())
+            {
+                StartConversation(conversation);
+                break;
+            }
+        }
+    }
+
     public void StartConversation(DialogConversation conversation)
     {
         if (isInDialog) return;
@@ -49,6 +62,10 @@ public class DialogManager : MonoBehaviour
         {
             // Go from negative money to $30.
             MoneyManager.Instance.AddMoney(30 - MoneyManager.Instance.currentMoney);
+        }
+        else if (currentDialog.eventToTrigger == "TalkToJoe")
+        {
+            GameStateManager.Instance.SetFlag(Flags.TALKED_TO_JOE, true);
         }
     }
 

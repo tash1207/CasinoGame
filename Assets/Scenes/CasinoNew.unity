@@ -5978,8 +5978,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.038297098, y: -0.47823617, z: 0.02088025, w: 0.8771474}
-  m_LocalPosition: {x: -5.09, y: 3.6, z: 1.2}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -27854,7 +27854,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c058a1e9d93a44888a2d53a6b553917b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogTrigger
-  dialog: {fileID: 11400000, guid: 637aa8efc22264f2e90919550f658e51, type: 2}
+  dialogs:
+  - {fileID: 11400000, guid: 637aa8efc22264f2e90919550f658e51, type: 2}
+  - {fileID: 11400000, guid: 228f883207b784f0a934bbea413306dd, type: 2}
   distanceFromCameraToBeInteractable: 0
   hoverCursor: {fileID: 2800000, guid: 5b2ec368c62fc4f78b29d00410ce3ff4, type: 3}
 --- !u!136 &1871221725

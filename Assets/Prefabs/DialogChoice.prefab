@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 658220968394920100}
   - component: {fileID: 4629045452152935672}
+  - component: {fileID: 2409442787225921061}
   - component: {fileID: 4201244055699720040}
   - component: {fileID: 1100672998136030214}
   m_Layer: 5
@@ -46,6 +47,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5608738997555723124}
   m_CullTransparentMesh: 1
+--- !u!114 &2409442787225921061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5608738997555723124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ca60fc77e4d344df89b7863da2cefb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogChoice
+  hoverCursor: {fileID: 2800000, guid: 5f82f4f9a97234993a2f34f6572b36d4, type: 3}
 --- !u!114 &4201244055699720040
 MonoBehaviour:
   m_ObjectHideFlags: 0

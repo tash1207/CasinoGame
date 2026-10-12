@@ -14,6 +14,7 @@ public class DialogCondition
     public ConditionType conditionType;
     public string conditionID;
     public int requiredValue;
+    public bool invertCondition; // Check if condition is NOT met
 
     public bool Evaluate()
     {
@@ -35,10 +36,10 @@ public class DialogCondition
                 }
                 break;
             case ConditionType.GameFlag:
-                //result = GameStateManager.Instance.GetFlag(conditionID) ?? false;
+                result = GameStateManager.Instance.GetFlag(conditionID);
                 break;
         }
 
-        return result;
+        return invertCondition ? !result : result;
     }
 }
