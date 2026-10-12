@@ -28,35 +28,37 @@ MonoBehaviour:
             dialogText: 
             responses: []
             endsConversation: 0
-            eventToTrigger: 
+            dialogActions: []
           conditions: []
           endsConversation: 1
-          eventToTrigger: 
+          dialogActions: []
         endsConversation: 0
-        eventToTrigger: GiveMoney
+        dialogActions:
+        - {fileID: 11400000, guid: b7f39be51778243539028e6b1469476c, type: 2}
       conditions:
       - conditionType: 2
         conditionID: 
         requiredValue: -1
+        invertCondition: 0
       endsConversation: 0
-      eventToTrigger: 
+      dialogActions: []
     - responseText: Good to see you, Joe.
       nextDialog:
         speakerName: Joe
         dialogText: 
         responses: []
         endsConversation: 0
-        eventToTrigger: 
+        dialogActions: []
       conditions: []
       endsConversation: 1
-      eventToTrigger: 
+      dialogActions: []
     endsConversation: 0
-    eventToTrigger: 
+    dialogActions: []
   canRepeat: 1
   repeatDialog:
     speakerName: 
     dialogText: 
     responses: []
     endsConversation: 0
-    eventToTrigger: 
+    dialogActions: []
   conditions: []

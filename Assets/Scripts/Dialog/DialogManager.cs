@@ -57,15 +57,12 @@ public class DialogManager : MonoBehaviour
             dialogUI.ShowChoices(currentDialog.responses);
         }
 
-        // TODO: Make the event trigger system more robust and scalable.
-        if (currentDialog.eventToTrigger == "GiveMoney")
+        if (currentDialog.dialogActions != null)
         {
-            // Go from negative money to $30.
-            MoneyManager.Instance.AddMoney(30 - MoneyManager.Instance.currentMoney);
-        }
-        else if (currentDialog.eventToTrigger == "TalkToJoe")
-        {
-            GameStateManager.Instance.SetFlag(Flags.TALKED_TO_JOE, true);
+            foreach (var dialogAction in currentDialog.dialogActions)
+            {
+                dialogAction.Execute();
+            }
         }
     }
 
@@ -76,9 +73,12 @@ public class DialogManager : MonoBehaviour
         if (responseIndex < 0 || responseIndex >= currentDialog.responses.Count) return;
 
         DialogResponse selectedResponse = currentDialog.responses[responseIndex];
-        if (selectedResponse.eventToTrigger != null)
+        if (selectedResponse.dialogActions != null)
         {
-            // Trigger event
+            foreach (var dialogAction in selectedResponse.dialogActions)
+            {
+                dialogAction.Execute();
+            }
         }
         if (selectedResponse.endsConversation)
         {

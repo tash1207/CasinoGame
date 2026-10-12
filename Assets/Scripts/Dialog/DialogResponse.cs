@@ -10,7 +10,7 @@ public class DialogResponse
     public DialogCondition[] conditions;
 
     public bool endsConversation = false;
-    public string eventToTrigger;
+    public DialogAction[] dialogActions;
 
     public bool MeetsConditions()
     {

@@ -16,7 +16,7 @@ public class DialogEntry
 
     [Header("Events")]
     public bool endsConversation = false;
-    public string eventToTrigger;
+    public DialogAction[] dialogActions;
 
     public bool IsLinearDialog()
     {
