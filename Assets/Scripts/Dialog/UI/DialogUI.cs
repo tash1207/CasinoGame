@@ -9,8 +9,12 @@ public class DialogUI : MonoBehaviour
     public GameObject dialogPanel;
 
     [Header("Dialog Display")]
+    public GameObject namePlate;
     public TextMeshProUGUI speakerNameText;
     public TextMeshProUGUI dialogText;
+    public GameObject closeButton;
+
+
     public float typingSpeed = 0.05f;
     private Coroutine typingCoroutine;
 
@@ -37,6 +41,7 @@ public class DialogUI : MonoBehaviour
 
     public void SetSpeakerName(string name)
     {
+        namePlate.SetActive(name != null && name != "");
         speakerNameText.text = name;
     }
 
@@ -66,6 +71,7 @@ public class DialogUI : MonoBehaviour
     public void ShowChoices(List<DialogResponse> responses)
     {
         HideChoices();
+        closeButton.SetActive(false);
 
         List<DialogResponse> availableResponses = new List<DialogResponse>();
         foreach (var response in responses)
@@ -90,6 +96,12 @@ public class DialogUI : MonoBehaviour
         }
 
         dialogChoiceContainer.SetActive(true);
+    }
+
+    public void ShowCloseButton()
+    {
+        HideChoices();
+        closeButton.SetActive(true);
     }
 
     private void HideChoices()
