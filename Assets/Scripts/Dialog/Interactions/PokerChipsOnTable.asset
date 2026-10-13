@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0ce668189fa64d18aebb98604ec5cdf, type: 3}
   m_Name: PokerChipsOnTable
   m_EditorClassIdentifier: Assembly-CSharp::DialogConversation
-  conversationName: 
+  conversationName: PokerChipsOnTable
   startingDialog:
     speakerName: 
     dialogText: I can't take someone else's chips!
