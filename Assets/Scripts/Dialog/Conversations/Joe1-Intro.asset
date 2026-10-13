@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0ce668189fa64d18aebb98604ec5cdf, type: 3}
   m_Name: Joe1-Intro
   m_EditorClassIdentifier: Assembly-CSharp::DialogConversation
-  conversationName: Joe
+  conversationName: Joe1-Intro
   startingDialog:
     speakerName: Joe
     dialogText: Hi, I'm Joe and I'm winning a bunch of money at this table today!
@@ -34,7 +34,8 @@ MonoBehaviour:
           endsConversation: 1
           dialogActions: []
         endsConversation: 0
-        dialogActions: []
+        dialogActions:
+        - {fileID: 11400000, guid: b7f39be51778243539028e6b1469476c, type: 2}
       conditions:
       - conditionType: 2
         conditionID: 

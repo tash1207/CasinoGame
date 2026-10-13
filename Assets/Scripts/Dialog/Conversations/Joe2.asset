@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0ce668189fa64d18aebb98604ec5cdf, type: 3}
   m_Name: Joe2
   m_EditorClassIdentifier: Assembly-CSharp::DialogConversation
-  conversationName: Joe
+  conversationName: Joe2
   startingDialog:
     speakerName: Joe
     dialogText: Welcome back to the high stakes table!
