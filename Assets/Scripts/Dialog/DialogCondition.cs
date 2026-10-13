@@ -14,6 +14,7 @@ public class DialogCondition
     public ConditionType conditionType;
     public string conditionID;
     public int requiredValue;
+    public ItemManager.Item requiredItem;
     public bool invertCondition; // Check if condition is NOT met
 
     public bool Evaluate()
@@ -23,7 +24,9 @@ public class DialogCondition
         switch (conditionType)
         {
             case ConditionType.HasTask:
+                break;
             case ConditionType.HasItem:
+                result = ItemManager.Instance.HasItem(requiredItem);
                 break;
             case ConditionType.HasMoney:
                 if (requiredValue < 0)

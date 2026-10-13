@@ -50,7 +50,7 @@ public class EventClickable : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (hasItem && !gotItem) 
         {
             itemCanvas.SetActive(true);
-            MoneyManager.Instance.AddMoney(2);
+            MoneyManager.Instance.AddMoney(5);
             gotItem = true;
         }
         canvasToDisplay.SetActive(true);

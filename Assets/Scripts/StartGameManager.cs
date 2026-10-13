@@ -9,6 +9,8 @@ public class StartGameManager : MonoBehaviour
         HIGH_STAKES_POKER
     }
 
+    public static StartGameManager Instance { get; private set; }
+
     [SerializeField] CinemachineCamera pokerCanvasVirtualCamera;
     [SerializeField] NavZoneManager.NavView targetView;
 
@@ -19,6 +21,14 @@ public class StartGameManager : MonoBehaviour
     [SerializeField] GameObject cardTableCanvasHighStakes;
 
     Vector2 defaultCursorHotspot = new Vector2(14, 11);
+
+    void Awake()
+    {
+        if (Instance == null) {
+            Instance = this;
+        }
+        else Destroy(gameObject);
+    }
 
     public void OnEnable()
     {

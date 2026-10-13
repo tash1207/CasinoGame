@@ -1747,7 +1747,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
+  m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -3837,7 +3837,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4966,12 +4966,12 @@ Camera:
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 50
+  m_FocalLength: 13.858139
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
   m_Anamorphism: 0
-  m_SensorSize: {x: 36, y: 24}
+  m_SensorSize: {x: 21.946, y: 16.002}
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -5519,7 +5519,6 @@ GameObject:
   m_Component:
   - component: {fileID: 371073225}
   - component: {fileID: 371073227}
-  - component: {fileID: 371073226}
   m_Layer: 0
   m_Name: ChipInteraction
   m_TagString: Untagged
@@ -5542,27 +5541,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1630336372}
   m_LocalEulerAnglesHint: {x: 0, y: 78.417, z: 0}
---- !u!114 &371073226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 371073224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c45265671db324b959d581f28def1797, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EventClickable
-  canvasToDisplay: {fileID: 421009875}
-  hasItem: 0
-  itemCanvas: {fileID: 0}
-  titleField: {fileID: 0}
-  textField: {fileID: 0}
-  titleToDisplay: 
-  textToDisplay: 
-  distanceFromCameraToBeInteractable: 0
-  hoverCursor: {fileID: 2800000, guid: 5f82f4f9a97234993a2f34f6572b36d4, type: 3}
 --- !u!136 &371073227
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -11603,6 +11581,7 @@ Transform:
   - {fileID: 1709675588}
   - {fileID: 885405672}
   - {fileID: 359917037}
+  - {fileID: 1166683720}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &769724351
@@ -12654,7 +12633,6 @@ GameObject:
   m_Component:
   - component: {fileID: 871661758}
   - component: {fileID: 871661760}
-  - component: {fileID: 871661759}
   m_Layer: 0
   m_Name: ChipInteraction
   m_TagString: Untagged
@@ -12677,27 +12655,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1632813803}
   m_LocalEulerAnglesHint: {x: 0, y: 78.417, z: 0}
---- !u!114 &871661759
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 871661757}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c45265671db324b959d581f28def1797, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EventClickable
-  canvasToDisplay: {fileID: 421009875}
-  hasItem: 0
-  itemCanvas: {fileID: 0}
-  titleField: {fileID: 0}
-  textField: {fileID: 0}
-  titleToDisplay: 
-  textToDisplay: 
-  distanceFromCameraToBeInteractable: 0
-  hoverCursor: {fileID: 2800000, guid: 5f82f4f9a97234993a2f34f6572b36d4, type: 3}
 --- !u!136 &871661760
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -16721,6 +16678,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1161234916}
   m_CullTransparentMesh: 1
+--- !u!1 &1166683719
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1166683720}
+  - component: {fileID: 1166683721}
+  m_Layer: 0
+  m_Name: ItemManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1166683720
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1166683719}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 769126719}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1166683721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1166683719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd4307cbb2f984004aa22a8a3eb1ed33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemManager
+  itemCanvas: {fileID: 100030289}
+  itemImagesParent: {fileID: 1513813999}
 --- !u!1 &1179743220
 GameObject:
   m_ObjectHideFlags: 0
@@ -20162,7 +20165,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7896621913975525901, guid: c612e3337c0dc104cad3a7273353aa22, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1464378598}
+      addedObject: {fileID: 1464378602}
     - targetCorrespondingSourceObject: {fileID: 7896621913975525901, guid: c612e3337c0dc104cad3a7273353aa22, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1464378599}
@@ -20172,27 +20175,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7412291008519719095, guid: c612e3337c0dc104cad3a7273353aa22, type: 3}
   m_PrefabInstance: {fileID: 1464378594}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1464378598
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 706578238}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c45265671db324b959d581f28def1797, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EventClickable
-  canvasToDisplay: {fileID: 421009875}
-  hasItem: 1
-  itemCanvas: {fileID: 100030289}
-  titleField: {fileID: 0}
-  textField: {fileID: 167794148}
-  titleToDisplay: 
-  textToDisplay: You can always count on finding spare change in a couch cushion.
-  distanceFromCameraToBeInteractable: 10
-  hoverCursor: {fileID: 2800000, guid: 5f82f4f9a97234993a2f34f6572b36d4, type: 3}
 --- !u!65 &1464378599
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -20214,6 +20196,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.1980333, y: 0.81105125, z: 1.0807252}
   m_Center: {x: -0.000079989455, y: 0.000026658177, z: -0.00007811191}
+--- !u!114 &1464378602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 706578238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c058a1e9d93a44888a2d53a6b553917b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogTrigger
+  dialogs:
+  - {fileID: 11400000, guid: 77a114a2f51714e73b33d2fb80048ce0, type: 2}
+  distanceFromCameraToBeInteractable: 10
+  hoverCursor: {fileID: 2800000, guid: 5f82f4f9a97234993a2f34f6572b36d4, type: 3}
 --- !u!1 &1473411654
 GameObject:
   m_ObjectHideFlags: 0
@@ -20944,7 +20942,7 @@ GameObject:
   - component: {fileID: 1513814002}
   - component: {fileID: 1513814001}
   m_Layer: 5
-  m_Name: Image
+  m_Name: ItemImages
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20968,7 +20966,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -25}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1513814001
@@ -24967,6 +24965,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: DialogManager, Assembly-CSharp
         m_MethodName: EndConversation
         m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 100030289}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -29696,8 +29706,8 @@ Transform:
   m_GameObject: {fileID: 1348643310871560469}
   serializedVersion: 2
   m_LocalRotation: {x: 0.726339, y: -0.011985004, z: -0.0103738755, w: -0.6871538}
-  m_LocalPosition: {x: -0.10168556, y: -23, z: -6}
-  m_LocalScale: {x: 800.00006, y: 800.00006, z: 800.00006}
+  m_LocalPosition: {x: 0, y: -5, z: -6}
+  m_LocalScale: {x: 900, y: 900, z: 900}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1513814000}
@@ -29711,7 +29721,7 @@ Transform:
   m_GameObject: {fileID: 1348643310731425796}
   serializedVersion: 2
   m_LocalRotation: {x: 0.726339, y: -0.011985004, z: -0.0103738755, w: -0.6871538}
-  m_LocalPosition: {x: 25.101616, y: 2.8961296, z: -2.5279086}
+  m_LocalPosition: {x: 80.06, y: 47.99, z: -2.5279086}
   m_LocalScale: {x: 800.00006, y: 800.00006, z: 800.00006}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -29728,6 +29738,7 @@ GameObject:
   - component: {fileID: 141317658531271087}
   - component: {fileID: 2170508279721421921}
   - component: {fileID: 3489402607902623965}
+  - component: {fileID: 3489402607902623966}
   m_Layer: 0
   m_Name: PokerChip_Red (1)
   m_TagString: Untagged
@@ -29746,8 +29757,9 @@ GameObject:
   - component: {fileID: 141317658389883070}
   - component: {fileID: 2170508280130458992}
   - component: {fileID: 3489402607522623948}
+  - component: {fileID: 3489402607522623949}
   m_Layer: 0
-  m_Name: PokerChip_Red
+  m_Name: PokerChip_Black
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29768,7 +29780,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1348643310871560469}
-  m_Mesh: {fileID: -4981589712135874037, guid: 9c1a1919840736d41a3b1a56b73629aa, type: 3}
+  m_Mesh: {fileID: -8453360895927617534, guid: 3968227f43f3d4f408e6d8d4d52481da, type: 3}
 --- !u!23 &3489402607522623948
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -29818,6 +29830,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3489402607522623949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1348643310871560469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cf90f0fe22694f428fc5039e01d7f42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  itemType: 0
 --- !u!23 &3489402607902623965
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -29867,6 +29892,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3489402607902623966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1348643310731425796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cf90f0fe22694f428fc5039e01d7f42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  itemType: 1
 --- !u!1001 &3904507889451483451
 PrefabInstance:
   m_ObjectHideFlags: 0
