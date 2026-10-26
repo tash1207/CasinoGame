@@ -4112,7 +4112,6 @@ RectTransform:
   m_Children:
   - {fileID: 270855614}
   - {fileID: 1473411655}
-  - {fileID: 989614939}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -8141,7 +8140,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &595809800
 Transform:
   m_ObjectHideFlags: 0
@@ -8151,7 +8150,7 @@ Transform:
   m_GameObject: {fileID: 595809799}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 20, z: 0}
+  m_LocalPosition: {x: 0, y: 14, z: 0}
   m_LocalScale: {x: 30, y: 1, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8203,7 +8202,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: -8486248398233692058, guid: 69078f70fd0af7c4c9bb7b96a1aa001c, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10202,7 +10201,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0.1
+  m_MatchWidthOrHeight: 0.15
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -10304,10 +10303,6 @@ RectTransform:
   - {fileID: 1384011292}
   - {fileID: 336504194}
   - {fileID: 630966608}
-  - {fileID: 1505432863}
-  - {fileID: 1187512156}
-  - {fileID: 1948201763}
-  - {fileID: 1985190205}
   - {fileID: 113412028}
   - {fileID: 1764790167}
   - {fileID: 1004256299}
@@ -10316,6 +10311,10 @@ RectTransform:
   - {fileID: 679338340}
   - {fileID: 1515653045}
   - {fileID: 285569038}
+  - {fileID: 1505432863}
+  - {fileID: 1187512156}
+  - {fileID: 1948201763}
+  - {fileID: 1985190205}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -11755,19 +11754,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 836923540}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 731863394}
-        m_TargetAssemblyTypeName: CardManager, Assembly-CSharp
-        m_MethodName: HighlightYourCards
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &836923540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13862,7 +13849,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 989614938}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -13870,7 +13857,7 @@ RectTransform:
   - {fileID: 1179743221}
   - {fileID: 1849992559}
   - {fileID: 1937104109}
-  m_Father: {fileID: 282952081}
+  m_Father: {fileID: 1473411655}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -15979,7 +15966,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 232, y: -162}
+  m_AnchoredPosition: {x: -326, y: 170}
   m_SizeDelta: {x: 250, y: 75}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1179743222
@@ -17962,10 +17949,6 @@ RectTransform:
   - {fileID: 423502609}
   - {fileID: 968467631}
   - {fileID: 707825073}
-  - {fileID: 1078289781}
-  - {fileID: 781250424}
-  - {fileID: 1338617922}
-  - {fileID: 1442595886}
   - {fileID: 228334732}
   - {fileID: 1605540863}
   - {fileID: 1888258993}
@@ -17973,6 +17956,10 @@ RectTransform:
   - {fileID: 2004692366}
   - {fileID: 836923538}
   - {fileID: 110951784}
+  - {fileID: 1078289781}
+  - {fileID: 781250424}
+  - {fileID: 1338617922}
+  - {fileID: 1442595886}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -19386,6 +19373,7 @@ RectTransform:
   m_Children:
   - {fileID: 1161234917}
   - {fileID: 918932783}
+  - {fileID: 989614939}
   m_Father: {fileID: 282952081}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
@@ -20311,19 +20299,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1515653047}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 731863394}
-        m_TargetAssemblyTypeName: CardManager, Assembly-CSharp
-        m_MethodName: HighlightYourCards
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1515653047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24338,7 +24314,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 232, y: -162}
+  m_AnchoredPosition: {x: -326, y: 170}
   m_SizeDelta: {x: 250, y: 75}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1849992560
@@ -26094,7 +26070,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 285, y: -162}
+  m_AnchoredPosition: {x: -280, y: 170}
   m_SizeDelta: {x: 180, y: 75}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1937104110
