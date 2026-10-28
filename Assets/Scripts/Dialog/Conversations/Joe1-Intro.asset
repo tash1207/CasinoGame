@@ -17,7 +17,7 @@ MonoBehaviour:
     speakerName: Joe
     dialogText: Hi, I'm Joe and I'm winning a bunch of money at this table today!
     responses:
-    - responseText: Can I borrow some money?
+    - responseText: Hi Joe, can I borrow some money?
       nextDialog:
         speakerName: Joe
         dialogText: Sure, here's a little something to get you started on the high
@@ -40,6 +40,7 @@ MonoBehaviour:
       - conditionType: 2
         conditionID: 
         requiredValue: -1
+        requiredItem: 0
         invertCondition: 0
       endsConversation: 0
       dialogActions: []
@@ -67,4 +68,5 @@ MonoBehaviour:
   - conditionType: 3
     conditionID: TALKED_TO_JOE
     requiredValue: 0
+    requiredItem: 0
     invertCondition: 1
