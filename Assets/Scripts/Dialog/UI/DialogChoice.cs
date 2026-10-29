@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 
 public class DialogChoice : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
+    public AudioClip clickSound;
     public Texture2D hoverCursor;
     Vector2 defaultCursorHotspot = new Vector2(14, 11);
 
@@ -19,6 +20,7 @@ public class DialogChoice : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        // TODO: Add click sound
+        if (clickSound != null)
+            AudioSource.PlayClipAtPoint(clickSound, Vector3.zero, 1.0f);
     }
 }
