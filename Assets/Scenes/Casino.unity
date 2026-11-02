@@ -4582,8 +4582,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.038297098, y: -0.47823617, z: 0.02088025, w: 0.8771474}
-  m_LocalPosition: {x: -5.09, y: 3.6, z: 1.2}
+  m_LocalRotation: {x: 0.06975647, y: 0, z: 0, w: 0.9975641}
+  m_LocalPosition: {x: 0, y: 3.4, z: 2.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -23935,6 +23935,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ca60fc77e4d344df89b7863da2cefb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogChoice
+  clickSound: {fileID: 0}
   hoverCursor: {fileID: 2800000, guid: 5f82f4f9a97234993a2f34f6572b36d4, type: 3}
 --- !u!1001 &1821540167
 PrefabInstance:
