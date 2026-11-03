@@ -5,12 +5,12 @@ public class MainMenu : MonoBehaviour
 {
     public void StartGame()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(2); // HotelRoom
     }
 
     public void CasinoMode()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(1); // Casino
     }
 
     public void ExitGame()

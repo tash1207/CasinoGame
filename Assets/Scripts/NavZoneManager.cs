@@ -6,12 +6,16 @@ public class NavZoneManager : MonoBehaviour
 {
     public enum NavView
     {
+        // Casino
         CasinoFacingPoker,
         PokerTable,
         CasinoFacingRight,
         GuitarDetail,
         PokerTableCanvas,
-        LeftPokerTable
+        LeftPokerTable,
+        // Hotel Room
+        RoomFacingDesk,
+        RoomAtDesk
     }
 
     [Header("Current State")]
