@@ -15,6 +15,7 @@ public class NavZoneManager : MonoBehaviour
         LeftPokerTable,
         // Hotel Room
         RoomFacingDesk,
+        RoomAtDeskIntro,
         RoomAtDesk
     }
 
