@@ -16,7 +16,11 @@ public class NavZoneManager : MonoBehaviour
         // Hotel Room
         RoomFacingDesk,
         RoomAtDeskIntro,
-        RoomAtDesk
+        RoomAtDesk,
+        RoomFacingLeftFromDesk,
+        RoomFacingDoor,
+        RoomJustEntered,
+        RoomJustEnteredForward
     }
 
     [Header("Current State")]
