@@ -1,11 +1,8 @@
-using TMPro;
 using UnityEngine;
 
 public class MoneyManager : MonoBehaviour
 {
     public static MoneyManager Instance { get; private set; }
-
-    [SerializeField] TMP_Text currentMoneyText;
 
     public int currentMoney { get; private set; }
 
@@ -18,20 +15,15 @@ public class MoneyManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
-    void Start()
-    {
-        currentMoneyText.text = "$" + currentMoney;
-    }
-
     public void AddMoney(int amount)
     {
         currentMoney += amount;
-        currentMoneyText.text = "$" + currentMoney;
+        Actions.CurrentMoney(currentMoney);
     }
 
     public void LoseMoney(int amount)
     {
         currentMoney -= amount;
-        currentMoneyText.text = "$" + currentMoney;
+        Actions.CurrentMoney(currentMoney);
     }
 }
