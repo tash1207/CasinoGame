@@ -3644,6 +3644,7 @@ GameObject:
   - component: {fileID: 1530918461}
   - component: {fileID: 1530918460}
   - component: {fileID: 1530918459}
+  - component: {fileID: 1530918462}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -3764,6 +3765,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1530918457}
   m_CullTransparentMesh: 1
+--- !u!114 &1530918462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1530918457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ca60fc77e4d344df89b7863da2cefb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverCursor
+  clickSound: {fileID: 0}
+  hoverCursor: {fileID: 2800000, guid: 5f82f4f9a97234993a2f34f6572b36d4, type: 3}
+  outlineText: 0
 --- !u!1001 &1533618338
 PrefabInstance:
   m_ObjectHideFlags: 0

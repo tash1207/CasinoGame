@@ -267,6 +267,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogChoice
   clickSound: {fileID: 8300000, guid: 1ef5bc66a550c468593a6d364f307ba1, type: 3}
   hoverCursor: {fileID: 2800000, guid: 5f82f4f9a97234993a2f34f6572b36d4, type: 3}
+  outlineText: 1
 --- !u!1 &19720709
 GameObject:
   m_ObjectHideFlags: 0
@@ -2224,6 +2225,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogChoice
   clickSound: {fileID: 8300000, guid: 1ef5bc66a550c468593a6d364f307ba1, type: 3}
   hoverCursor: {fileID: 2800000, guid: 5f82f4f9a97234993a2f34f6572b36d4, type: 3}
+  outlineText: 1
 --- !u!1001 &1063119524
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3533,6 +3535,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogChoice
   clickSound: {fileID: 8300000, guid: 1ef5bc66a550c468593a6d364f307ba1, type: 3}
   hoverCursor: {fileID: 2800000, guid: 5f82f4f9a97234993a2f34f6572b36d4, type: 3}
+  outlineText: 1
 --- !u!1 &1770937037
 GameObject:
   m_ObjectHideFlags: 0
