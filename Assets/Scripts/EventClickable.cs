@@ -16,7 +16,7 @@ public class EventClickable : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     [SerializeField] string textToDisplay;
     [SerializeField] int distanceFromCameraToBeInteractable;
 
-    Vector2 defaultCursorHotspot = new Vector2(14, 11);
+    Vector2 hoverCursorHotspot = new Vector2(14, 11);
     bool gotItem = false;
 
     public Texture2D hoverCursor;
@@ -24,14 +24,14 @@ public class EventClickable : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (!IsInteractable()) return;
-        Cursor.SetCursor(hoverCursor, defaultCursorHotspot, CursorMode.Auto);
+        Cursor.SetCursor(hoverCursor, hoverCursorHotspot, CursorMode.Auto);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (!IsInteractable()) return;
         // Reset to default system cursor when leaving the zone
-        Cursor.SetCursor(null, defaultCursorHotspot, CursorMode.Auto);
+        CursorHelper.ResetCursor();
     }
 
     // Detects clicks and touches

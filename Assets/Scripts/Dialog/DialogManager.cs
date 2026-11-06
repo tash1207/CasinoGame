@@ -13,8 +13,6 @@ public class DialogManager : MonoBehaviour
 
     private HashSet<string> completedConversations = new HashSet<string>();
 
-    Vector2 defaultCursorHotspot = new Vector2(14, 11);
-
     void Awake()
     {
         if (Instance == null) {
@@ -95,7 +93,7 @@ public class DialogManager : MonoBehaviour
             currentDialog = selectedResponse.nextDialog;
             DisplayCurrentDialog();
         }
-        Cursor.SetCursor(null, defaultCursorHotspot, CursorMode.Auto);
+        CursorHelper.ResetCursor();
     }
 
     public void EndConversation()
@@ -105,7 +103,7 @@ public class DialogManager : MonoBehaviour
             completedConversations.Add(currentConversation.conversationName);
         }
 
-        Cursor.SetCursor(null, defaultCursorHotspot, CursorMode.Auto);
+        CursorHelper.ResetCursor();
         dialogUI.Hide();
         isInDialog = false;
         currentConversation = null;

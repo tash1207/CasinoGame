@@ -5,17 +5,17 @@ public class DialogChoice : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 {
     public AudioClip clickSound;
     public Texture2D hoverCursor;
-    Vector2 defaultCursorHotspot = new Vector2(14, 11);
+    Vector2 hoverCursorHotspot = new Vector2(14, 11);
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Cursor.SetCursor(hoverCursor, defaultCursorHotspot, CursorMode.Auto);
+        Cursor.SetCursor(hoverCursor, hoverCursorHotspot, CursorMode.Auto);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         // Reset to default system cursor when leaving the zone
-        Cursor.SetCursor(null, defaultCursorHotspot, CursorMode.Auto);
+        CursorHelper.ResetCursor();
     }
 
     public void OnPointerClick(PointerEventData eventData)

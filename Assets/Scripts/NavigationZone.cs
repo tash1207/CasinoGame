@@ -16,7 +16,6 @@ public class NavigationZone : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
 
     Vector2 arrowCursorHotspot = new Vector2(16, 16); // Center of cursor image
-    Vector2 defaultCursorHotspot = new Vector2(14, 11);
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -27,13 +26,13 @@ public class NavigationZone : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void OnPointerExit(PointerEventData eventData)
     {
         // Reset to default system cursor when leaving the zone
-        Cursor.SetCursor(null, defaultCursorHotspot, CursorMode.Auto);
+        CursorHelper.ResetCursor();
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         // Reset cursor before moving so it doesn't get stuck
-        Cursor.SetCursor(null, defaultCursorHotspot, CursorMode.Auto);
+        CursorHelper.ResetCursor();
 
         zoneVirtualCamera.Prioritize();
         NavZoneManager.Instance.ChangeView(targetView);

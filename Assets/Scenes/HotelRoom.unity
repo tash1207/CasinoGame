@@ -284,10 +284,10 @@ MonoBehaviour:
     me stay for free!
 
 
-    World famous magician Disappearo will be performing here
-    tomorrow and I have front row seats. He "stole" the Diamond Guitar yesterday
-    for publicity for his show but my uncle assures me it''s safely locked away in
-    his office. Anyways, I''m off to win big at the casino!
+    World famous magician Disappearo is performing here tomorrow
+    and I have front row seats. He "stole" the priceless Diamond Guitar yesterday
+    as a publicity stunt for his show but my uncle assures me the guitar is safely
+    locked away in his office. Anyways, I''m off to win big at the casino!
 
 
     Cheers,
@@ -950,8 +950,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 471406347}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.049325276, y: 0.7053843, z: -0.049325276, w: 0.7053843}
-  m_LocalPosition: {x: 6.5, y: 2.71, z: 12.5}
+  m_LocalRotation: {x: 0.095845714, y: 0, z: 0, w: 0.99539626}
+  m_LocalPosition: {x: 11, y: 2.25, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

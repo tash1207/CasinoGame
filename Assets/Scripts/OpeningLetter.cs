@@ -7,8 +7,6 @@ public class OpeningLetter : MonoBehaviour
     [SerializeField] GameObject letterCanvas;
     [SerializeField] NavZoneManager.NavView targetView;
 
-    Vector2 defaultCursorHotspot = new Vector2(14, 11);
-
     void Start()
     {
         // TODO: Add voiceover reading letter contents
@@ -21,8 +19,7 @@ public class OpeningLetter : MonoBehaviour
         letterCanvas.SetActive(false);
 
         // Reset cursor before moving so it doesn't get stuck
-        Cursor.SetCursor(null, defaultCursorHotspot, CursorMode.Auto);
+        CursorHelper.ResetCursor();
         NavZoneManager.Instance.ChangeView(targetView);
-
     }
 }

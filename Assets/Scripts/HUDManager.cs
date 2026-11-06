@@ -16,12 +16,12 @@ public class HUDManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
-        public void OnEnable()
+    void OnEnable()
     {
         Actions.CurrentMoney += SetCurrentMoney;
     }
 
-    public void OnDisable()
+    void OnDisable()
     {
         Actions.CurrentMoney -= SetCurrentMoney;
     }

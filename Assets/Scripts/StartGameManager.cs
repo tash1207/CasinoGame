@@ -20,8 +20,6 @@ public class StartGameManager : MonoBehaviour
     [Header("High Stakes Poker")]
     [SerializeField] GameObject cardTableCanvasHighStakes;
 
-    Vector2 defaultCursorHotspot = new Vector2(14, 11);
-
     void Awake()
     {
         if (Instance == null) {
@@ -70,7 +68,7 @@ public class StartGameManager : MonoBehaviour
     void StartPoker()
     {
         // Reset cursor before moving so it doesn't get stuck
-        Cursor.SetCursor(null, defaultCursorHotspot, CursorMode.Auto);
+        CursorHelper.ResetCursor();
         pokerCanvasVirtualCamera.Prioritize();
         NavZoneManager.Instance.ChangeView(targetView);
     }
