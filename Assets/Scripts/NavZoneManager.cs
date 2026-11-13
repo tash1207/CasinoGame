@@ -20,7 +20,8 @@ public class NavZoneManager : MonoBehaviour
         RoomFacingLeftFromDesk,
         RoomFacingDoor,
         RoomJustEntered,
-        RoomJustEnteredForward
+        RoomJustEnteredForward,
+        RoomFacingPhone,
     }
 
     [Header("Current State")]
