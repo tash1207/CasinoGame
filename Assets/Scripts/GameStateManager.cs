@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameStateManager : MonoBehaviour
 {
@@ -27,5 +28,17 @@ public class GameStateManager : MonoBehaviour
             return value;
         }
         return false;
+    }
+
+    public void GoToHotelRoom()
+    {
+        SceneManager.LoadScene(2); // HotelRoom
+        CursorHelper.ResetCursor();
+    }
+
+    public void GoToCasino()
+    {
+        SceneManager.LoadScene(1); // Casino
+        CursorHelper.ResetCursor();
     }
 }

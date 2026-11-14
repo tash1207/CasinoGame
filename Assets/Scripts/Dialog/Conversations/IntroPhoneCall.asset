@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ce668189fa64d18aebb98604ec5cdf, type: 3}
+  m_Name: IntroPhoneCall
+  m_EditorClassIdentifier: Assembly-CSharp::DialogConversation
+  conversationName: IntroPhoneCall
+  startingDialog:
+    speakerName: ???
+    dialogText: Hello? Tasha is that you?
+    responses:
+    - responseText: Is this a prank call? What's going on?
+      nextDialog:
+        speakerName: Uncle Hank
+        dialogText: Not a prank, this is your Uncle Hank calling from my office downstairs.
+          We have a bit of an emergency right now, the Diamond Guitar has gone missing.
+        responses:
+        - responseText: Haha Uncle Hank, I saw Disappearo's stunt yesterday so I
+            know the guitar is "missing".
+          nextDialog:
+            speakerName: Uncle Hank
+            dialogText: Well yes, it was "missing" and now it's MISSING! Come to
+              my office immediately and I'll fill you in on the situation.
+            responses: []
+            endsConversation: 1
+            dialogActions:
+            - {fileID: 11400000, guid: 2f913868147904fa8bf371a314eb43a6, type: 2}
+          conditions: []
+          endsConversation: 0
+          dialogActions: []
+        endsConversation: 0
+        dialogActions: []
+      conditions: []
+      endsConversation: 0
+      dialogActions: []
+    - responseText: Umm yes... who is this?
+      nextDialog:
+        speakerName: Uncle Hank
+        dialogText: Tasha! I'm glad I caught you. It's your Uncle Hank calling from
+          my office downstairs. We have a bit of an emergency right now, the Diamond
+          Guitar has gone missing.
+        responses:
+        - responseText: Haha Uncle Hank, I saw Disappearo's stunt yesterday so I
+            know the guitar is "missing".
+          nextDialog:
+            speakerName: Uncle Hank
+            dialogText: Well yes, it was "missing" and now it's MISSING! Come to
+              my office immediately and I'll fill you in on the situation.
+            responses: []
+            endsConversation: 1
+            dialogActions:
+            - {fileID: 11400000, guid: 2f913868147904fa8bf371a314eb43a6, type: 2}
+          conditions: []
+          endsConversation: 0
+          dialogActions: []
+        endsConversation: 0
+        dialogActions: []
+      conditions: []
+      endsConversation: 0
+      dialogActions: []
+    endsConversation: 0
+    dialogActions: []
+  canRepeat: 0
+  repeatDialog:
+    speakerName: 
+    dialogText: 
+    responses: []
+    endsConversation: 0
+    dialogActions: []
+  conditions:
+  - conditionType: 3
+    conditionID: INTRO_PHONE_CALL
+    requiredValue: 0
+    requiredItem: 0
+    invertCondition: 1
+  - conditionType: 3
+    conditionID: TRIGGERED_INTRO_PHONE_CALL
+    requiredValue: 0
+    requiredItem: 0
+    invertCondition: 0
