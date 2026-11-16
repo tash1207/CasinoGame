@@ -2942,6 +2942,7 @@ MonoBehaviour:
   envelopeToShow: {fileID: 444275543612258544}
   letterCanvas: {fileID: 981731581}
   targetView: 8
+  paperSFX: {fileID: 8300000, guid: b442686b3fac44d59abf8ed2aa14f193, type: 3}
 --- !u!1 &998041549
 GameObject:
   m_ObjectHideFlags: 0

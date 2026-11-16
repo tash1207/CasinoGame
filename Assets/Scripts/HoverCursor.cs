@@ -38,7 +38,8 @@ public class HoverCursor : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public void OnPointerClick(PointerEventData eventData)
     {
         if (clickSound != null)
-            AudioSource.PlayClipAtPoint(clickSound, Vector3.zero, 1.0f);
+            AudioManager.Instance.PlaySFX(clickSound);
+            //AudioSource.PlayClipAtPoint(clickSound, Vector3.zero, 1.0f);
     }
 
     void SetHoverOutline()

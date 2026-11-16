@@ -6,6 +6,7 @@ public class OpeningLetter : MonoBehaviour
     [SerializeField] GameObject envelopeToShow;
     [SerializeField] GameObject letterCanvas;
     [SerializeField] NavZoneManager.NavView targetView;
+    [SerializeField] AudioClip paperSFX;
 
     void Start()
     {
@@ -15,6 +16,7 @@ public class OpeningLetter : MonoBehaviour
     public void ClickLetter()
     {
         Destroy(letterToDestroy);
+        AudioSource.PlayClipAtPoint(paperSFX, Vector3.zero, 2.0f);
         envelopeToShow.SetActive(true);
         letterCanvas.SetActive(false);
 
