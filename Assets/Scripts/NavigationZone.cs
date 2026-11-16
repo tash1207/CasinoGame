@@ -19,18 +19,21 @@ public class NavigationZone : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (PauseManager.Instance.IsPaused()) return;
         // Change to the specific arrow cursor when hovering over this zone
         Cursor.SetCursor(arrowCursor, arrowCursorHotspot, CursorMode.Auto);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (PauseManager.Instance.IsPaused()) return;
         // Reset to default system cursor when leaving the zone
         CursorHelper.ResetCursor();
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (PauseManager.Instance.IsPaused()) return;
         // Reset cursor before moving so it doesn't get stuck
         CursorHelper.ResetCursor();
 

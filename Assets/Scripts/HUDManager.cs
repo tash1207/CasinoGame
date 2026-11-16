@@ -7,6 +7,8 @@ public class HUDManager : MonoBehaviour
     public static HUDManager Instance { get; private set; }
 
     [SerializeField] TMP_Text currentMoneyText;
+    [SerializeField] GameObject pauseMenu;
+    [SerializeField] GameObject volumeSettingsCanvas;
 
     void Awake()
     {
@@ -36,7 +38,24 @@ public class HUDManager : MonoBehaviour
         currentMoneyText.text = "$" + currentMoney;
     }
 
-    public void ExitGame()
+    public void ShowPauseMenu()
+    {
+        PauseManager.Instance.SetPaused(true);
+        pauseMenu.SetActive(true);
+    }
+
+    public void ClosePauseMenu()
+    {
+        PauseManager.Instance.SetPaused(false);
+        pauseMenu.SetActive(false);
+    }
+
+    public void ShowVolumeSettings()
+    {
+        volumeSettingsCanvas.SetActive(true);
+    }
+
+    public void ExitToMainMenu()
     {
         SceneManager.LoadScene(0); // Main Menu
     }

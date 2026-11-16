@@ -34,6 +34,7 @@ public class DialogTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     bool IsInteractable()
     {
+        if (PauseManager.Instance.IsPaused()) return false;
         if (!HasDialog()) return false;
         if (distanceFromCameraToBeInteractable == 0) return true;
         return Vector3.Distance(transform.position, Camera.main.transform.position) <= distanceFromCameraToBeInteractable;
